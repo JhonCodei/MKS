@@ -1,0 +1,66 @@
+table.table-bordered{
+    border:2px solid #375a7f;
+    margin-top:20px;
+}
+table.table-bordered > thead > tr > th{
+    border:2px solid #375a7f;
+}
+table.table-bordered > tbody > tr > td{
+    border:2px solid #375a7f;
+}
+.form-control
+{
+    color:black;
+}
+.inp-g-ad_alter
+{
+    padding: 0.01em !important;
+    line-height:10px;
+    font-size: 0.9em !important;
+}
+.font_inside_input
+{
+    padding:0.01em !important;
+}
+.modal { overflow: auto !important; }
+
+input[readonly].form-control
+{
+    background-color: #fff;
+}
+/* Important part */
+.modal-dialog{
+    overflow-y: initial !important
+}
+.fixed-table-body{
+    height: 400px;
+    overflow-y: auto;
+}
+.border-input
+{
+    border-color:black;
+}
+.border-prsnl
+{
+    border-color:#7FA99B;
+}
+.modal-content
+{
+    max-width: 100%;
+}
+.label_input_producto
+{
+    font-size:  0.65em !important;
+}
+.border-prsnl2
+{
+    border:1.5px solid black;
+}
+.text_dark_2
+{
+    color:black !important;
+}
+.bck_total
+{
+    background-color: #d7f8f7;
+}

@@ -1,0 +1,45 @@
+.table-responsive
+            {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -ms-overflow-style: -ms-autohiding-scrollbar;
+            }
+            .tablesmall2
+            {
+                /* font-size: 0.8em; */
+                text-align: center;
+                /* font-weight: bold; */
+            }
+            #table-x-especialidad, #table-x-localidad
+            {
+                table-layout: fixed;
+            }
+            #table-x-especialidad, #table-x-localidad tr
+            {
+                min-height:3px !important;
+                max-height:3px !important;
+            }
+            .modal { overflow: auto !important; }
+            table 
+            {
+                table-layout: fixed;
+                word-wrap: break-word;
+            }
+            table.table-bordered
+            {
+                border:1.5px solid #588D9C;
+                margin-top:20px;
+            }
+            table.table-bordered > thead > tr > th
+            {
+                border:1.5px solid #588D9C;
+            }
+            table.table-bordered > tbody > tr > td
+            {
+                border:1.5px solid #588D9C;
+            } 
+            tbody
+            {
+                color:black !important;
+            }

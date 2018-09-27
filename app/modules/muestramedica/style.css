@@ -1,0 +1,37 @@
+.modal { overflow: auto !important; }
+        
+        input[readonly].form-control
+        {
+            background-color: #fff;
+        }
+        /* Important part */
+        .modal-dialog{
+            overflow-y: initial !important
+        }
+        .fixed-table-body{
+            height: 400px;
+            overflow-y: auto;
+        }
+        .border-input
+        {
+            border-color:black;
+        }
+        .border-prsnl
+        {
+            border-color:#7FA99B;
+        }
+        .modal-content
+        {
+            max-width: 100%;
+        }
+        /* .modal-lg
+        {
+            max-width: 55% !important;
+        } */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        }
+        
