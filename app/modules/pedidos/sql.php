@@ -62,7 +62,22 @@ function buscar_pedido_sql()
 														SEPARATOR '||') AS desc_producto,
 										GROUP_CONCAT(orden_pedido_items.unidades
 														ORDER BY orden_pedido_items.id
-														SEPARATOR '||') AS cantidad
+														SEPARATOR '||') AS cantidad,
+										GROUP_CONCAT(orden_pedido_items.precio_lista
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS precio_lista,
+										GROUP_CONCAT(orden_pedido_items.precio_unitario
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS precio_unitario,
+										GROUP_CONCAT(orden_pedido_items.descuento
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS descuento,
+										GROUP_CONCAT(orden_pedido_items.descuento
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS impuesto,
+										GROUP_CONCAT(orden_pedido_items.precio_linea
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS precio_linea
 									FROM
 										orden_pedido
 														INNER JOIN

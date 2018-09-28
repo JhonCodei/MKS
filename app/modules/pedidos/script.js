@@ -1,17 +1,35 @@
 //CODE
 /***  __INIT__  ***/
+$(function()// validations
+{
+    //history.pushState(null, null, "Editar");
+    var uri = document.URL;
+    var edt_p = uri.indexOf("pedidos/editar?p=");
+
+    if(edt_p == -1)
+    {
+        //console.log(edt_p);
+        var get_ = getQueryVariable("p");
+        //console.log("get p=" + get_);
+        if(get_ != false)
+        {
+            _buscar_pedido(get_);
+        }
+    }
+});
+
 console.log("10076008979");
 
 change_event();
 
-jQuery('#fecha').datepicker({
+jQuery('#fecha, #fecha-consulta').datepicker({
     orientation: 'auto top',
     toggleActive: true,
     autoclose: true,
     format: "dd/mm/yyyy",
     todayHighlight: true
 });
-
+ 
 /***  __INIT__  ***/
 function close_modal_mm_await()
 {
@@ -19,9 +37,9 @@ function close_modal_mm_await()
         location = ''
     }, 0);
 }
-var i = 2;
+//var i = 2;
 
-function newElement(e, no_, element, form)
+function newElement(e, i, element, form)
 {
     var html;
 
@@ -636,15 +654,10 @@ function _listar_pedidos()
     connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     connect.send(postData);
 }
-console.log(getQueryVariable("id"));
-history.pushState(null, "", "Editar");
 function _buscar_pedido(id)
-{
-    window.location.href = "http://192.168.1.220/MKS/Pedidos/Editar?id=1";
-    // var lbl = $("#lbl_id").text(getQueryVariable("id"));
-    // console.log(getQueryVariable("id"));
-    /*var controller = __AJAX__ + "pedidos-_buscar_pedido",
-        connect, postData;
+{   
+    var lbl = $("#lbl_id").text(id);
+    var controller = "../" + __AJAX__ + "pedidos-_buscar_pedido", connect, postData;
 
     postData = "id=" + id;
         
@@ -656,11 +669,14 @@ function _buscar_pedido(id)
             $("#loader").empty();
 
             var result = connect.responseText;
+
+            //console.log("Result = "+result);
+            $("#core-row").html(result);
             
-            var new_split = result.split('|~|');
-            $("#div_content_modal_2").html(new_split[0]);
+            // var new_split = result.split('|~|');
+            // $("#div_content_modal_2").html(new_split[0]);
             
-            $("#div_table_content").html(new_split[1]);     
+            // $("#div_table_content").html(new_split[1]);     
             
         }else if (connect.readyState != 4)
         {
@@ -669,5 +685,5 @@ function _buscar_pedido(id)
     }
     connect.open('POST', controller, true);
     connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    connect.send(postData);   */ 
+    connect.send(postData);
 }
