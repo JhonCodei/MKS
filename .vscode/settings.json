@@ -1,13 +1,13 @@
 {
     "editor.fontFamily": "Source Code Pro",
-    "editor.fontSize": 12,
-    "editor.fontWeight": "400",
-    "editor.tabSize": 2,
+    "editor.fontWeight": "300",
+    "editor.tabSize": 1,
     "files.exclude": {
         "**/.DS_Store": false,
         "**/.git": false,
         "**/.hg": false,
         "**/.svn": false,
         "**/CVS": false
-    }
+    },
+    "editor.fontSize": 15
 }

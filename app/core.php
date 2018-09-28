@@ -11,14 +11,15 @@ date_default_timezone_set('America/Lima');
 session_start();
 
 # Database Config
-define('DB_DSN', 'mysql');                 // Data Source Name.
-define('DB_HOST', 'localhost');         // Host  Database.
-define('DB_USER', 'root');                 // User Database.
-#define('DB_NAME', 'mks_unidos_db');    // Name Database.
-#define('DB_PASS', 'syst3m2090');       // Password Database.
+define('DB_DSN', 'mysql');              # Data Source Name.
+define('DB_HOST', '127.0.0.1');         # Host  Database.
+define('DB_PORT', '3306');         					# Host  PUERTO.
+define('DB_USER', 'root');              # User Database.
+#define('DB_NAME', 'mks_unidos_db');    # Name Database.
+#define('DB_PASS', 'syst3m2090');       # Password Database.
 
-define('DB_NAME', 'mks_restore_13');    // Name Database.
-define('DB_PASS', 'lenovo19');       // Password Database.
+define('DB_NAME', 'mks_restore_13');    # Name Database.
+define('DB_PASS', 'lenovo19');       			# Password Database.
 
 # Correo Config
 

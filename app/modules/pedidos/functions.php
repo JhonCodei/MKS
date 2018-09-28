@@ -27,6 +27,36 @@
         }
         return $output;
     }
+    function condicion_pago_short($val)
+    {
+        
+        switch ($val) {
+            case 'CE':
+                return "Contra entrega";
+                break;
+            case 'F30':
+                return "Factura a 30 días";
+                break;
+            case 'F45':
+                return "Factura a 45 días";
+                break;
+            case 'F60':
+                return "Factura a 60 días";
+                break;
+            case 'L30':
+                return "Letra a 30 días";
+                break;
+            case 'L45':
+                return "Letra a 45 días";
+                break;
+            case 'L60':
+                return "Letra a 60 días";
+                break;
+            default:
+                # code...
+                break;
+        }
+    }
     function distribuidoras($select)
     {
         $output = null;

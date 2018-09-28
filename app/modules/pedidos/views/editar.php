@@ -1,19 +1,15 @@
-<div class="row">
+<div class="row" >
     <div class="card-box col-lg-12">
         <p class="h1 header-title">
         <a href="./" class="h2 waves-effect waves-light" style="color:#0CC243;">
-        <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Nuevo Pedido</b>
-            <!-- <p class="text-muted m-b-30 font-14">
-            <button type="button" onclick="muestra_medica_form_direct(0);" class="btn btn-sm btn-default waves-effect waves-light" style="border-style:2px !important;">
-                <span class="fa fa-plus"></span>&nbsp;Descargar muestras
-            </button>
-            </p> -->
+        <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Editar Pedido</b>
+
         </p>
         <div class="justify-content-center">
             <div class="media-container-column" data-form-type="formoid">                 
                 <div class="mbr-form text-center" data-form-title="">
                     <div class="row row-sm-offset">
-                    
+                    <label for="" id="lbl_id"></label>
                         <div class="input-group col-md-4">
                             <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Fecha</span>
                             <input type="text" id="fecha"  class="form-control text-center border border-secondary" value="<?php print date("d/m/Y"); ?>">

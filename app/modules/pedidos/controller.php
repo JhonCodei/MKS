@@ -32,7 +32,7 @@ Class PedidosController
         $class = new PedidosModel();
         return $class->validar_cliente_ruc($ruc);
     }
-    public function  _buscar_cliente()
+    public function _buscar_cliente()
     {
         $cliente_ruc = $_POST['cliente_ruc'];
 
@@ -45,7 +45,7 @@ Class PedidosController
         $Class = new PedidosModel();
         print $Class->_buscar_cliente($cliente_ruc);
     }
-    public function  _buscar_vendedor()
+    public function _buscar_vendedor()
     {
         $cod_vend = $_POST['cod_vend'];
 
@@ -283,6 +283,21 @@ Class PedidosController
 
 
 
+    }
+    public function _listar_pedidos()
+    {
+        $vendedor = info_usuario('codigo');
+        $fecha = formatfecha($_POST['fecha']);
+        
+        $Class = new PedidosModel();
+        print $Class->_listar_pedidos($vendedor, $fecha);
+    }
+    public function _buscar_pedido()
+    {
+        $id = $_POST['id'];
+
+        $Class = new PedidosModel();
+        print $Class->_buscar_pedido($id);
     }
     
     

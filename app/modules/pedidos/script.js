@@ -1,5 +1,8 @@
 //CODE
+/***  __INIT__  ***/
 console.log("10076008979");
+
+change_event();
 
 jQuery('#fecha').datepicker({
     orientation: 'auto top',
@@ -8,6 +11,8 @@ jQuery('#fecha').datepicker({
     format: "dd/mm/yyyy",
     todayHighlight: true
 });
+
+/***  __INIT__  ***/
 function close_modal_mm_await()
 {
     setTimeout(function() {
@@ -80,7 +85,8 @@ function newElement(e, no_, element, form)
     i++;
     $("#parent-div_" + form).prepend(html);
 }
-function close_modal_await() {
+function close_modal_await()
+{
     swal({
         title: 'Cancelar',
         text: "Desea cerrar el formulario?",
@@ -98,16 +104,19 @@ function close_modal_await() {
     }, function(dismiss) {
     });
 }
-function change_event() {
+function change_event()
+{
     var value = $('#select_event_change').val();
     $('#event_button_').removeAttr('onclick').attr('onclick', 'return ' + value + ';');
 }
-function close_modal(target) {
+function close_modal(target)
+{
     //$("#" + target).modal('hide');
     //$("#" + target).modal('hide');
     $("#" + target).hide();
 }
-function _Show_small_notification(i, msg) {
+function _Show_small_notification(i, msg)
+{
     $("#prod_cod_" + i).notify(msg, {
         position: 'top',
         elementPosition: 'right',
@@ -116,11 +125,13 @@ function _Show_small_notification(i, msg) {
         autoHideDelay: 4000
     });
 }
-function elementRemove(id) {
+function elementRemove(id)
+{
     $("#" + id).remove();
     sum_all_table();
 }
-function clear_text(id1, id2) {
+function clear_text(id1, id2)
+{
     $("#" + id1).val('');
     $("#" + id2).val('');
 }
@@ -544,4 +555,119 @@ function _insertar_pedido()
     connect.send(postData);
 
 }
+function _listar_pedidos()
+{
+    var controller = __AJAX__ + "pedidos-_listar_pedidos",
+        connect, postData;
+    var fecha = $("#fecha-consulta").val();
+ 
+    postData = "fecha=" + fecha;
+    connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    connect.onreadystatechange = function() {
+        if (connect.readyState == 4 && connect.status == 200) {
+            $("#loader").empty();
 
+            var result = connect.responseText;
+            var split_response = result.split('|~|');
+
+            var core_table = split_response[0];
+            var json_data = split_response[1];
+
+            if (parseInt(core_table) == 0) //error
+            {
+                $("#div-listado_mm").html('No hay registros');
+            } else {
+
+                $("#div-listado_mm").html(core_table);
+
+                var json_data = JSON.parse(json_data);
+
+                var table = $("#_listado_pedidos_").DataTable({
+                    dom: "Bfrtip",
+                    lengthChange: false,
+                    destroy: true,
+                    data: json_data.data,
+                    buttons: [{
+                        extend: 'excel',
+                        footer: true,
+                        title: 'Listado de pedidos',
+                        text: '<span class="fa fa-file-excel-o"></span>',
+                        className: 'btn btn-default waves-effect waves-light',
+                        exportOptions: {
+                            columns: '.print_this'
+                        }
+                    }],
+                    columns: [
+                        { "data": "id"},
+                        { "data": "vendedor"},
+                        { "data": "cliente_ruc"},
+                        { "data": "nombre_comercial"},
+                        { "data": "desc_dist"},
+                        { "data": "condicion_pago"},
+                        { "data": "codigo_producto"},
+                        { "data": "desc_producto", className: 'text-left'},
+                        { "data": "cantidad"},
+                        { "data": "acciones"}
+                    ],
+                    responsive: true,
+                    iDisplayLength: 25,
+                    bLengthChange: false, //show rows
+                    bFilter: true,
+                    bInfo: false,
+                    language: {
+                        paginate:
+                        {
+                            previous: "<span class='fa fa-chevron-left'></span>",
+                            next: "<span class='fa fa-chevron-right'></span>",
+                        }
+                    },
+                    pagingType: "simple"
+                });
+                table.buttons().container().appendTo('#_listado_pedidos__wrapper .col-md-6:eq(0)');
+                $("#_listado_pedidos__filter").addClass('pull-left');
+                $("#_listado_pedidos__paginate").addClass('pull-left');
+                $("#_listado_pedidos_ tbody").css('font-size', '0.87em').css('color', 'black');
+            }
+        } else if (connect.readyState != 4) {
+            $("#loader").html(loader());
+        }
+    }
+    connect.open('POST', controller, true);
+    connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    connect.send(postData);
+}
+console.log(getQueryVariable("id"));
+history.pushState(null, "", "Editar");
+function _buscar_pedido(id)
+{
+    window.location.href = "http://192.168.1.220/MKS/Pedidos/Editar?id=1";
+    // var lbl = $("#lbl_id").text(getQueryVariable("id"));
+    // console.log(getQueryVariable("id"));
+    /*var controller = __AJAX__ + "pedidos-_buscar_pedido",
+        connect, postData;
+
+    postData = "id=" + id;
+        
+    connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    connect.onreadystatechange = function()
+    {
+        if (connect.readyState == 4 && connect.status == 200)
+        {
+            $("#loader").empty();
+
+            var result = connect.responseText;
+            
+            var new_split = result.split('|~|');
+            $("#div_content_modal_2").html(new_split[0]);
+            
+            $("#div_table_content").html(new_split[1]);     
+            
+        }else if (connect.readyState != 4)
+        {
+            $("#loader").html(loader());
+        }
+    }
+    connect.open('POST', controller, true);
+    connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    connect.send(postData);   */ 
+}

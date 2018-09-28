@@ -350,9 +350,6 @@ Class PedidosModel
             }
             return $output;
     }
-    public function __get_precio__(int $periodo, int $prodcucto)
-    {
-    }
     public function _insertar_pedido($data)
     {
         $output = null;
@@ -461,18 +458,146 @@ Class PedidosModel
         }
         return $output;
     }
-    public function buscar_pedido(int $id)
+    public function _buscar_pedido(int $id)
+    {
+        $output = null;
+
+        $runQuery1 = $this->db->prepare(buscar_pedido_sql());
+        $runQuery1->bindParam(":id", $id);
+        if($runQuery1->execute())
+        {
+            $Query1 = $runQuery1->fetch(PDO::FETCH_ASSOC);
+
+            $id = $Query1['id'];
+            $vendedor = $Query1['vendedor'];
+            $name_vendedor = nombre_corto($vendedor);
+            $cliente_ruc = $Query1['cliente_ruc'];
+            $nombre_comercial = $Query1['nombre_comercial'];
+            $cod_dist = $Query1['cod_dist'];
+            $desc_dist = $Query1['desc_dist'];
+            $fecha = fecha_db_to_view_2($Query1['fecha']);
+            $condicion_pago = $Query1['condicion_pago'];
+            $creador_pedido = $Query1['creador_pedido'];
+            $id_items = $Query1['id_items'];
+            $codigo_producto = $Query1['codigo_producto'];
+            $desc_producto = $Query1['desc_producto'];
+            $cantidad = $Query1['cantidad'];
+
+            if(strpos($codigo_producto, '||') !== FALSE)
+            {
+                $codigo_producto_ = explode('||', $codigo_producto);
+                $desc_producto_ = explode('||', $desc_producto);
+                $cantidad_ = explode('||', $cantidad);
+            }else
+            {
+                $codigo_producto_[] = $codigo_producto; 
+                $desc_producto_[] = $desc_producto;
+                $cantidad_[] = $cantidad; 
+            }
+        }else
+        {
+            $output = errorPDO($runQuery1);
+        }
+        return $output;
+    }
+    public function _actualizar_pedidos(array $data)
     {
     }
-    public function actualizar_pedidos(array $data)
-    {
-    }
-    public function eliminar_pedidos(array $data)
+    public function _eliminar_pedidos(array $data)
     { 
     }
-    
+    public function _listar_pedidos($vendedor, $fecha)
+    {
+        $output = null;
 
-    
+        $runQuery1 = $this->db->prepare(listar_pedido_sql());
+        $runQuery1->bindParam(":fecha", $fecha);
+        $runQuery1->bindParam(":vendedor", $vendedor);
+        if($runQuery1->execute())
+        {
+            if($runQuery1->rowCount() > 0)
+            {
+                $output =   '<table id="_listado_pedidos_" class="table table-bordered table-condensed table-sm" style="width:auto !important;font-size:0.9em;color:black;font-family:verdana;">
+                                <thead class="text-white" style="background-color:#4D7CAE;font-size:0.9em;">
+                                    <th class="text-center print_this">ID</th>
+                                    <th class="text-center print_this">Vendedor</th>
+                                    <th class="text-center print_this">Ruc</th>
+                                    <th class="text-center print_this">Cliente</th>
+                                    <th class="text-center print_this">Distribuidora</th>
+                                    <th class="text-center print_this">condicion pago</th>
+                                    <th class="text-center print_this">Producto código</th>
+                                    <th class="text-center print_this">Producto descripción</th>
+                                    <th class="text-center print_this">Cantidad</th>
+                                    <th class="text-center">Acciones</th>
+                                </thead>
+                            </table>';
+                while($Query1 = $runQuery1->fetch(PDO::FETCH_ASSOC))
+                {
+                    $id = $Query1['id'];
+                    $vendedor = $Query1['vendedor'];
+                    $name_vendedor = nombre_corto($vendedor);
+                    $cliente_ruc = $Query1['cliente_ruc'];
+                    $nombre_comercial = $Query1['nombre_comercial'];
+                    $cod_dist = $Query1['cod_dist'];
+                    $desc_dist = $Query1['desc_dist'];
+                    $fecha = fecha_db_to_view($Query1['fecha']);
+                    $condicion_pago = condicion_pago_short($Query1['condicion_pago']);
+                    $creador_pedido = $Query1['creador_pedido'];
+                    $id_items = $Query1['id_items'];
+                    $codigo_producto = $Query1['codigo_producto'];
+                    $desc_producto = $Query1['desc_producto'];
+                    $cantidad = $Query1['cantidad'];
+
+                    $button1 = '<a href="Pedidos/Editar?id=1" class="btn btn-default btn-sm waves-effect waves-light">Editar</a><br>';
+                    // $button1 = '<button class="btn btn-default btn-sm waves-effect waves-light" onclick="return _buscar_pedido('.$id.');">Editar</button><br>';
+                    $button2 = '<button class="btn btn-danger btn-sm waves-effect waves-light" onclick="return _eliminar_pedido('.$id.');">Eliminar</button><br>';
+
+                    if(strpos($codigo_producto, '||') !== FALSE)
+                    {
+                        $codigo_producto_ex = explode('||', $codigo_producto);
+                        $codigo_producto_no_0 = array_diff($codigo_producto_ex, array(0));
+                        $codigo_producto_f = str_replace("||", "<br>", implode($codigo_producto_no_0, '||'));
+
+                        $desc_producto_producto_ex = explode('||', $desc_producto);
+                        $desc_producto_producto_no_0 = array_diff($desc_producto_producto_ex, array(0));
+                        $desc_producto_f = str_replace("||", "<br>", implode($desc_producto_producto_no_0, '||'));
+
+                        $cantidad_ex = explode('||', $cantidad);
+                        $cantidad_no_0 = array_diff($cantidad_ex, array(0));
+                        $cantidad_f = str_replace("||", "<br>", implode($cantidad_no_0, '||'));
+                    }else
+                    {
+                        $codigo_producto_f = $codigo_producto;
+                        $desc_producto_f = $desc_producto;
+                        $cantidad_f = $cantidad;
+                    }
+
+                    $result['id'] = $id;
+                    $result['vendedor'] = $name_vendedor;
+                    $result['cliente_ruc'] = $cliente_ruc;
+                    $result['nombre_comercial'] =  $nombre_comercial;
+                    $result['desc_dist'] = $desc_dist;
+                    $result['condicion_pago'] = $condicion_pago;
+                    $result['codigo_producto'] = '<p style="font-size:0.85em;font-weight:bold;">'.$codigo_producto_f.'</p>';
+                    $result['desc_producto'] = '<p style="font-size:0.85em;font-weight:bold;">'.$desc_producto_f.'</p>';
+                    $result['cantidad'] = $cantidad_f;
+                    $result['acciones'] = $button1.$button2;
+
+                    $data['data'][] = $result;
+                }
+            }else
+            {
+                $output = 0;
+                $data['data']['error'] = "-";
+            }
+        }else
+        {
+            $output = 0;
+            $data['data']['error'] = errorPDO($runQuery1);
+        }
+        return $output.'|~|'.json_encode($data);
+    }
+
     public function __destruct()
     {
         $this->db = NULL;#Connection Desctruct#
