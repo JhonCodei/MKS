@@ -107,7 +107,7 @@ function close_modal_await()
 {
     swal({
         title: 'Cancelar',
-        text: "Desea cerrar el formulario?",
+        text: "Desea salir del pedido?",
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Si, Cerrar',
@@ -116,9 +116,7 @@ function close_modal_await()
         cancelButtonClass: 'btn btn-primary m-l-10 waves-light waves-effect',
         buttonsStyling: false
     }).then(function() {
-        setTimeout(function() {
-            location = ''
-        }, 0);
+        __atras__();
     }, function(dismiss) {
     });
 }
@@ -414,10 +412,10 @@ function precio_lista_x_prod_x_dist(target)
     var distribuidora = $("#distribuidora").val();
     var fecha = $("#fecha").val();
 
-    if (cantidad.length == 0 || producto.length == 0 || producto == 0)
+    console.log("cantidad=" + cantidad + " -- " + "producto=" + producto);
+
+    if (cantidad.length == 0 || producto.length == 0)
     {
-        //cliente_ruc = 'S';
-        //swal('Importante', 'Ingrese cantidad !', 'error');
         return false;
     }
     postData =  "producto=" + producto +  "&fecha=" + fecha + "&distribuidora=" + distribuidora; //"&cantidad=" + cantidad +
@@ -561,7 +559,6 @@ function _insertar_pedido()
                 });
             } else{
                 swal("Error", connect.responseText, "error");
-                
             }
         } else if (connect.readyState != 4)
         {
@@ -601,7 +598,8 @@ function _listar_pedidos()
                 var json_data = JSON.parse(json_data);
 
                 var table = $("#_listado_pedidos_").DataTable({
-                    dom: "Bfrtip",
+                    //dom: "Bfrtip",
+                    dom: "frtip",
                     lengthChange: false,
                     destroy: true,
                     data: json_data.data,
@@ -618,11 +616,12 @@ function _listar_pedidos()
                     columns: [
                         { "data": "id"},
                         { "data": "vendedor"},
+                        { "data": "estado"},
                         { "data": "cliente_ruc"},
                         { "data": "nombre_comercial"},
                         { "data": "desc_dist"},
                         { "data": "condicion_pago"},
-                        { "data": "codigo_producto"},
+                        //{ "data": "codigo_producto"},
                         { "data": "desc_producto", className: 'text-left'},
                         { "data": "cantidad"},
                         { "data": "acciones"}
@@ -669,15 +668,15 @@ function _buscar_pedido(id)
             $("#loader").empty();
 
             var result = connect.responseText;
-
-            //console.log("Result = "+result);
-            $("#core-row").html(result);
-            
-            // var new_split = result.split('|~|');
-            // $("#div_content_modal_2").html(new_split[0]);
-            
-            // $("#div_table_content").html(new_split[1]);     
-            
+ 
+            if(parseInt(result) == 404)
+            {
+                __atras__();
+            }else
+            {
+                $("#core-row").html(result);
+                sum_all_table();
+            }
         }else if (connect.readyState != 4)
         {
             $("#loader").html(loader());
@@ -686,4 +685,138 @@ function _buscar_pedido(id)
     connect.open('POST', controller, true);
     connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     connect.send(postData);
+}
+function _actualizar_pedido(id)
+{
+    var controller = "../"+ __AJAX__ + "pedidos-_actualizar_pedido",
+        connect, postData;
+
+    var status = $("#lbl_status").text();
+    var fecha = $("#fecha").val();
+    var condicion_pago = $("#condicion_pago").val();
+    var distribuidora = $("#distribuidora").val();
+    var cliente_ruc = $("#cliente_ruc").val();
+    var cliente_name = $("#cliente_name").val();
+    var cod_vend = $("#cod_vend").val();
+    var name_vend = $("#name_vend").val();
+    //var name_vend = $("#name_vend").val();
+    var post_unique = "id="+ id + "&fecha=" + fecha + "&cond_pago=" + condicion_pago + "&distribuidora=" + distribuidora +
+        "&ruc=" + cliente_ruc + "&cli_name=" + cliente_name + "&cod_vend=" + cod_vend+ "&name_vend=" + name_vend;
+    
+        //insert Array productos[]
+    var prod_cod = $("input[name='prod_cod_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var prod_desc = $("label[name='prod_desc_insertar[]']").map(function() { return $(this).text(); }).get().join("||");
+    var prod_cant = $("input[name='prod_cant_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var prec_list = $("input[name='prec_list_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var porc_dscu = $("input[name='porc_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var prec_uni = $("input[name='prec_unidad_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var prec_uni_igv = $("input[name='prec_uni_igv_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var monto_desc = $("input[name='monto_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var valor_neto = $("input[name='valor_neto_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var monto_line_total = $("input[name='monto_line_total_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+
+    var post_productos = "&prod_cod=" + prod_cod + "&prod_desc=" + prod_desc + "&prod_cant=" + prod_cant +
+        "&prec_list=" + prec_list + "&porc_dscu=" + porc_dscu + "&prec_uni=" + prec_uni + "&prec_uni_igv=" + prec_uni_igv +
+        "&monto_desc=" + monto_desc + "&valor_neto=" + valor_neto + "&monto_line_total=" + monto_line_total;
+
+    postData = post_unique + post_productos + "&estado=" + status;
+    //console.log(postData);
+    connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    connect.onreadystatechange = function() {
+        if (connect.readyState == 4 && connect.status == 200)
+        {
+            $("#loader").empty();
+            if (parseInt(connect.responseText) == 1)
+            {
+                swal({
+                    title: 'Correcto',
+                    text: "Actualizado correctamente",
+                    type: 'success',
+                    showCancelButton: false,
+                    allowOutsideClick: false,
+                    confirmButtonText: 'Aceptar',
+                    //cancelButtonText: 'No cerrar',
+                    confirmButtonClass: 'btn btn-primary waves-light waves-effect',
+                    cancelButtonClass: 'btn btn-primary m-l-10 waves-light waves-effect',
+                    buttonsStyling: true
+                }).then(function()
+                {
+                    history.back(1);
+                }, function(dismiss) {
+                   });
+            } else{
+                swal("Error", connect.responseText, "error");
+                
+            }
+        } else if (connect.readyState != 4)
+        {
+            $("#loader").html(loader());
+        }
+    }
+    connect.open('POST', controller, true);
+    connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    connect.send(postData);
+}
+function _eliminar_pedido(id)
+{
+    swal({
+        title: 'Eliminar',
+        text: "Seguro que desea eliminar?",
+        type: 'question',
+        showCancelButton: true,
+        allowOutsideClick: false,
+        confirmButtonText: 'Si, eliminar',
+        cancelButtonText: 'No, cancelar',
+        confirmButtonClass: 'btn btn-danger waves-light waves-effect',
+        cancelButtonClass: 'btn btn-primary m-l-10 waves-light waves-effect',
+        buttonsStyling: true
+    }).then(function()
+    {
+        var controller = __AJAX__ + "pedidos-_eliminar_pedido", connect, postData;
+
+        postData = "id=" + id;
+            
+        connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        connect.onreadystatechange = function()
+        {
+            if (connect.readyState == 4 && connect.status == 200)
+            {
+                $("#loader").empty();
+    
+                var result = connect.responseText;
+     
+                if(parseInt(result) == 1)
+                {
+                    swal({
+                        title: 'Correcto',
+                        text: "Eliminado correctamente",
+                        type: 'success',
+                        showCancelButton: false,
+                        allowOutsideClick: false,
+                        confirmButtonText: 'Aceptar',
+                        //cancelButtonText: 'No cerrar',
+                        confirmButtonClass: 'btn btn-primary waves-light waves-effect',
+                        cancelButtonClass: 'btn btn-primary m-l-10 waves-light waves-effect',
+                        buttonsStyling: true
+                    }).then(function()
+                    {
+                        _listar_pedidos();
+                    }, function(dismiss) {});
+                }else if(parseInt(result) == 404)
+                {
+                    swal("Error", "No puedes eliminar este registro", "error");
+                }else
+                {
+                    swal("Error", result, "error");
+                }
+            }else if (connect.readyState != 4)
+            {
+                $("#loader").html(loader());
+            }
+        }
+        connect.open('POST', controller, true);
+        connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        connect.send(postData);
+    }, function(dismiss){});
+    
 }

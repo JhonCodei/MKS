@@ -13,6 +13,7 @@ function listar_pedido_sql()
 										orden_pedido.fecha_orden AS fecha,
 										orden_pedido.pago_condicion AS condicion_pago,
 										orden_pedido.vendedor_registro AS creador_pedido,
+										orden_pedido.estado AS estado,
 										GROUP_CONCAT(orden_pedido_items.id
 														ORDER BY orden_pedido_items.id
 														SEPARATOR '||') AS id_items,
@@ -51,6 +52,7 @@ function buscar_pedido_sql()
 										orden_pedido.fecha_orden AS fecha,
 										orden_pedido.pago_condicion AS condicion_pago,
 										orden_pedido.vendedor_registro AS creador_pedido,
+										orden_pedido.estado AS estado,
 										GROUP_CONCAT(orden_pedido_items.id
 														ORDER BY orden_pedido_items.id
 														SEPARATOR '||') AS id_items,
@@ -89,4 +91,14 @@ function buscar_pedido_sql()
 									WHERE
 										orden_pedido.id = :id";
 	return $sql;
+}
+function estado_pedido_sql()
+{
+		$sql = "SELECT orden_pedido.estado AS estado FROM orden_pedido WHERE orden_pedido.id = :id";
+		return $sql;
+}
+function propietario_pedido_sql()
+{
+		$sql = "SELECT orden_pedido.vendedor_id AS vendedor, orden_pedido.vendedor_registro AS vendedor_registro FROM orden_pedido WHERE orden_pedido.id = :id";
+		return $sql;
 }

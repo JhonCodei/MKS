@@ -1,7 +1,7 @@
 <div class="row">
     <div class="card-box col-lg-12">
         <p class="h1 header-title">
-        <a href="./" class="h2 waves-effect waves-light" style="color:#0CC243;">
+        <a href="javascript:void(0)" onclick="close_modal_await()" class="h2 waves-effect waves-light" style="color:#0CC243;">
         <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Nuevo Pedido</b>
             <!-- <p class="text-muted m-b-30 font-14">
             <button type="button" onclick="muestra_medica_form_direct(0);" class="btn btn-sm btn-default waves-effect waves-light" style="border-style:2px !important;">
@@ -70,7 +70,7 @@
                                             class="col-lg-6 btn btn-default waves-effect waves-light border border-secondary">
                             <span class="fa fa-plus"></span>&nbsp;Guardar</button>
                             <!-- return back page -->
-                            <button type="button" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
+                            <button onclick="close_modal_await()" type="button" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
                             <span class="fa fa-close"></span>&nbsp;Cancelar</button>
                             
                         </div>

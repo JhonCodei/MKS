@@ -1,5 +1,1 @@
-<div class="row" id="core-row">
-
-    
-
-</div>
+<div class="row" id="core-row"></div>

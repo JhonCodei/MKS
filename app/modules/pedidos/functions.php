@@ -76,7 +76,7 @@
 
                     if($select == $dst_cod)
                     {
-                        $output .= '<option value="'.$dst_cod.'" selectd>'.$dst_desc.'</option>';
+                        $output .= '<option value="'.$dst_cod.'" selected>'.$dst_desc.'</option>';
                     }else
                     {
                         $output .= '<option value="'.$dst_cod.'">'.$dst_desc.'</option>';
@@ -90,4 +90,21 @@
         }
 
         return $output;
+    }
+    function _estados_($var = null)
+    {
+        switch ($var) {
+            case '0':
+                return "<b style='color:red;'>CANCELADO</b>";
+                break;
+            case '1':
+                return "<b style='color:#d3560e;'>INICIADO</b>";  
+                break;
+            case '2':
+                return "<b style='color:#235784;'>DESPACHADO</b>";
+                break;
+            default:
+                # code...
+                break;
+        }
     }

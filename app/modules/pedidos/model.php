@@ -487,6 +487,7 @@ Class PedidosModel
             $descuento = $Query1['descuento'];
             $impuesto = $Query1['impuesto'];
             $precio_linea = $Query1['precio_linea'];
+            $estado = _estados_($Query1['estado']);
 
 
             if(strpos($codigo_producto, '||') !== FALSE)
@@ -515,11 +516,11 @@ Class PedidosModel
 
             $count = count($codigo_producto_);
             $new_elent = $count+1;
-            $DELSQL = "xd";
+            $DELSQL = "-";
             
             $output = '<div class="card-box col-lg-12">
             <p class="h1 header-title">
-            <a href="./" class="h2 waves-effect waves-light" style="color:#0CC243;">
+            <a href="javascript:void(0)" onclick="close_modal_await()" class="h2 waves-effect waves-light" style="color:#0CC243;">
             <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Editar Pedido</b>
     
             </p>
@@ -530,19 +531,19 @@ Class PedidosModel
                         <label for="" id="lbl_id"></label>
                             <div class="input-group col-md-4">
                                 <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Fecha</span>
-                                <input type="text" id="fecha" readonly="true" class="form-control text-center border border-secondary" value="'.$DELSQL.'">
+                                <input type="text" id="fecha" readonly="true" class="form-control text-center border border-secondary" value="'.$fecha.'">
                             </div>
     
                             <div class="input-group col-md-4">
                                 <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cond. pago</span>
                                 <select class="form-control border border-secondary" id="condicion_pago">
-                                '.condicion_pago('CE').'
+                                '.condicion_pago($condicion_pago).'
                                 </select>
                             </div>
                             <div class="input-group col-md-4">
                                 <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Distribuidora</span>
                                 <select class="form-control border border-secondary" id="distribuidora">
-                                '.distribuidoras(0).'
+                                '.distribuidoras($cod_dist).'
                                 </select>
                             </div> 
     
@@ -551,7 +552,7 @@ Class PedidosModel
                                 <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect">
                                     <i class="fa fa-search" onclick="return _buscar_cliente();"></i></span>
                                 <input type="text" id="cliente_ruc" class="form-control text-center border border-secondary"
-                                            onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc" value="'.$DELSQL.'">
+                                            onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc" value="'.$cliente_ruc.'">
                                 <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" 
                                             onclick="__clear__('."'cliente_ruc'".','."'cliente_name'".');">
                                     <i class="fa fa-trash"></i></span>    
@@ -559,7 +560,7 @@ Class PedidosModel
     
                             <div class="input-group col-md-4">
                                 <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cliente</span>
-                                <input type="text" id="cliente_name" class="form-control text-center border border-secondary" readonly="true" placeholder="Razón social" value="'.$DELSQL.'">
+                                <input type="text" id="cliente_name" class="form-control text-center border border-secondary" readonly="true" placeholder="Razón social" value="'.$nombre_comercial.'">
                             </div>
     
                             <div class="input-group col-md-4">
@@ -568,22 +569,22 @@ Class PedidosModel
                                             onclick="return _buscar_vendedor();"><i class="fa fa-search"></i></span>
     
                                 <input type="text" class="form-control text-center border border-secondary" id="cod_vend"
-                                            onkeypress="return max_length(this.value, 3);" placeholder="-" value="'.$DELSQL.'">
+                                            onkeypress="return max_length(this.value, 3);" placeholder="-" value="'.$vendedor.'">
                                 <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect"
                                             onclick="__clear__('."'cod_vend,name_vend'".');"><i class="fa fa-trash"></i></span>    
                             </div>
     
                             <div class="input-group col-md-4 ">
                                 <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Vendedor</span>
-                                <input type="text" class="form-control text-center border border-secondary" readonly="true" placeholder="-" id="name_vend" value="'.$DELSQL.'">
+                                <input type="text" class="form-control text-center border border-secondary" readonly="true" placeholder="-" id="name_vend" value="'.$name_vendedor.'">
                             </div>
     
                             <div class="input-group col-md-4 ">
-                                <button  type="button" onclick="return _insertar_pedido();" id="button_on_insert"
+                                <button  type="button" onclick="return _actualizar_pedido('.$id.');" id="button_on_insert"
                                                 class="col-lg-6 btn btn-default waves-effect waves-light border border-secondary">
                                 <span class="fa fa-plus"></span>&nbsp;Guardar</button>
                                 <!-- return back page -->
-                                <button type="button" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
+                                <button type="button" onclick="close_modal_await()" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
                                 <span class="fa fa-close"></span>&nbsp;Cancelar</button>
                                 
                             </div>
@@ -600,13 +601,13 @@ Class PedidosModel
                                     </thead>
                                     <tbody  style="font-size:0.85em;color:black;">
                                         <tr>
-                                            <td class="text-center border-prsnl2" id="sm_m_b">'.$DELSQL.'</td>
+                                            <td class="text-center border-prsnl2" id="sm_m_b">0.00</td>
                                             <!-- <td class="text-center border-prsnl2">0.00</td> -->
-                                            <td class="text-center border-prsnl2" id="sm_desc">'.$DELSQL.'</td>
+                                            <td class="text-center border-prsnl2" id="sm_desc">0.00</td>
                                             <!-- <td class="text-center border-prsnl2">0.00</td> -->
-                                            <td class="text-center border-prsnl2" id="sm_m_i">'.$DELSQL.'</td>
-                                            <td class="text-center border-prsnl2" id="sm_igv">'.$DELSQL.'</td>
-                                            <td class="text-center border-prsnl2 bck_total" id="sm_total">'.$DELSQL.'</td>
+                                            <td class="text-center border-prsnl2" id="sm_m_i">0.00</td>
+                                            <td class="text-center border-prsnl2" id="sm_igv">0.00</td>
+                                            <td class="text-center border-prsnl2 bck_total" id="sm_total">0.00</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -615,7 +616,7 @@ Class PedidosModel
                             <div class="pt-1 table-responsive" style="width:100% !important;">
                             <br>
                             <label for="" class="text-center h5 font-weight-bold text-dark">Estado: 
-                                <label id="lbl_status" class="text-center h6 font-weight-bold text-primary">.[ - $DEL SQL - ].</label></label>
+                                <label id="lbl_status" class="text-center h6 font-weight-bold text-primary">'.$estado.'</label></label>
                                 
                                 <table id="table-pedidos-add" class="table table-striped table-condensed table-bordered table-sm">
                                 <thead style="background-color:#476269;" class="text-center text-white">
@@ -637,59 +638,60 @@ Class PedidosModel
                                     </th>
                                 </thead>
     
-                                    <tbody id="parent-div_insertar">
-                                    <input type="hidden" value="'.$id.'" id="id_pedido">';
+                                    <tbody id="parent-div_insertar">';
                                     
                         for ($i = 0; $i <= $count-1; $i++)
                         { 
-                            $n = $i+$new_elent;
+                            $monto_desc_ = round($cantidad_[$i] * ($precio_lista_[$i] * ($descuento_[$i] / 100)), 2);
+                            $valor_neto_ = round($cantidad_[$i] * ($precio_lista_[$i] - ($precio_lista_[$i] * ($descuento_[$i] / 100))), 2);
 
-                            $output .=  '<tr id="tr'.$i.'">
+                            $n = $i+1;
+                            $output .=  '<tr id="tr'.$n.'">
                                             <!-- button restar -->
                                             <td>
-                                                <button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove('."'tr".$i."'".');">
+                                                <button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove('."'tr".$n."'".');">
                                                 <span class="fa fa-minus"></span></button>
                                             </td>
                                             <!-- button restar -->
                                             <td>
                                                 <div class="input-group">
                                                 <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect"
-                                                            onclick="_buscar_producto('.$i.');" ><i class="fa fa-search"></i></span>
-                                                    <input type="number"  onblur="precio_lista_x_prod_x_dist('.$i.');_buscar_producto('.$i.');" onchange="precio_lista_x_prod_x_dist('.$i.');" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cod."
-                                                                name="prod_cod_insertar[]" id="prod_cod_'.$i.'">
+                                                            onclick="return _buscar_producto('.$n.');" ><i class="fa fa-search"></i></span>
+                                                    <input type="number" value="'.$codigo_producto_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input"
+                                                            onchange="precio_lista_x_prod_x_dist('.$n.');" onblur="precio_lista_x_prod_x_dist('.$n.');_buscar_producto('.$n.');" 
+                                                            placeholder="Cod." name="prod_cod_insertar[]" id="prod_cod_'.$n.'">
                                                 </div>
                                                 <div style="border:1px solid black;color:black;">
                                                 <span class="input-group-addon input-sm bg-inverse text-white  font-weight-bold border border-secondary inp-g-ad_alter">Producto</span>
                                                     <!-- <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Producto"
                                                                 id="prod_desc_1" name="prod_desc_insertar[]"> -->
-                                                    <label class="label_input_producto" id="prod_desc_'.$i.'" name="prod_desc_insertar[]">-</label>
+                                                    <label class="label_input_producto" id="prod_desc_'.$n.'" name="prod_desc_insertar[]">'.$desc_producto_[$i].'</label>
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-dark inp-g-ad_alter">Cant.</span>
-                                                    <input type="number" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant."
-                                                                id="cant_1" name="prod_cant_insertar[]" onchange="precio_lista_x_prod_x_dist('.$i.');"  onblur="precio_lista_x_prod_x_dist('.$i.');"  onkeypress="return max_length(this.value, 4);">
-                                                                <!-- onblur="precio_lista_x_prod_x_dist(1);" -->
+                                                    <input type="number" value="'.$cantidad_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant."
+                                                                id="cant_'.$n.'" name="prod_cant_insertar[]" onchange="precio_lista_x_prod_x_dist('.$n.');"  onblur="precio_lista_x_prod_x_dist('.$n.');"  onkeypress="return max_length(this.value, 4);">
                                                 </div>
                                             </td>
                                             <!-- button fila productos -->
-    
+                                         
                                             <!-- button fila INFO -->
                                             <td>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>list.</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_'.$i.'" name="prec_list_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$precio_lista_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_'.$n.'" name="prec_list_insertar[]">
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Desc.<br>%</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_'.$i.'" name="porc_desc_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$descuento_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_'.$n.'" name="porc_desc_insertar[]">
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_'.$i.'" name="prec_unidad_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$precio_unitario_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_'.$n.'" name="prec_unidad_insertar[]">
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_'.$i.'" name="prec_uni_igv_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$impuesto_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_'.$n.'" name="prec_uni_igv_insertar[]">
                                                 </div>
                                             </td>
                                             <!-- button fila INFO -->
@@ -697,15 +699,15 @@ Class PedidosModel
                                             <td>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_'.$i.'" name="monto_desc_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$monto_desc_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_'.$n.'" name="monto_desc_insertar[]">
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Valor<br>Neto</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_'.$i.'" name="valor_neto_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$valor_neto_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_'.$n.'" name="valor_neto_insertar[]">
                                                 </div>
                                                 <div>
                                                     <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto</span>
-                                                    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_'.$i.'" name="monto_line_total_insertar[]">
+                                                    <input type="text" readonly="true" value="'.$precio_linea_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_'.$n.'" name="monto_line_total_insertar[]">
                                                 </div>
                                             </td>
                                             <!-- button fila VALORES -->
@@ -734,11 +736,185 @@ Class PedidosModel
         }
         return $output;
     }
-    public function _actualizar_pedidos(array $data)
+    public function __get_status($id)
     {
+        $output = false;
+
+        $runQuery1 = $this->db->prepare(estado_pedido_sql());
+        $runQuery1->bindParam(":id", $id);
+        if($runQuery1->execute())
+        {
+            $Query1 = $runQuery1->fetch(PDO::FETCH_ASSOC);
+            $estado = $Query1['estado'];
+            if($estado == 1)
+            {
+                $output = true;
+            }
+        }
+        return $output;
     }
-    public function _eliminar_pedidos(array $data)
+    public function __get_propietario($id, $usuario)
+    {
+        $output = false;
+        
+        $runQuery1 = $this->db->prepare(propietario_pedido_sql());
+        $runQuery1->bindParam(":id", $id);
+        if($runQuery1->execute())
+        {
+            $Query1 = $runQuery1->fetch(PDO::FETCH_ASSOC);
+            $vendedor = $Query1['vendedor'];
+            $vendedor_registro = $Query1['vendedor_registro'];
+            if($vendedor == $usuario || $vendedor_registro == $usuario)
+            {
+                $output = true;
+            }
+        }
+        return $output;
+    }
+    public function _actualizar_pedido($data)
+    {
+        $output = null;
+
+        $_id = $data->id;
+        $cliente = $data->cliente;
+        $condicion_pago = $data->condicion_pago;
+        $fecha = $data->fecha;
+        $distribuidora = $data->distribuidora;
+        #$estado_ = $data->estado_;
+        $vendedor = $data->vendedor;
+        $vendedor_registro = $data->vendedor_registro;
+
+        $array_prod_cod = $data->array_prod_cod;
+        $array_prod_name = $data->array_prod_name;
+        $array_prod_cant = $data->array_prod_cant;
+        $array_prec_list = $data->array_prec_list;
+        $array_porc_dscu = $data->array_porc_dscu;
+        $array_prec_uni = $data->array_prec_uni;
+        $array_prec_uni_igv = $data->array_prec_uni_igv;
+        $array_monto_desc = $data->array_monto_desc;
+        $array_valor_neto = $data->array_valor_neto;
+        $array_monto_line_total = $data->array_monto_line_total;
+
+        $precio = array_sum($array_valor_neto);
+        $impuesto = round($precio* 0.18, 2);
+        $precio_total = $precio + $impuesto;
+
+        if(is_array($array_prod_cod))
+        {
+            $prod_cod = explode('||', implode($array_prod_cod, "||"));
+            $prod_name = explode('||', implode($array_prod_name, "||"));
+            $prod_cant = explode('||', implode($array_prod_cant, "||"));
+            $precio_lista = explode('||', implode($array_prec_list, "||"));
+            $descuento_ = explode('||', implode($array_porc_dscu, "||"));
+            $precio_unitario = explode('||', implode($array_prec_uni, "||"));
+            $prec_uni_igv = explode('||', implode($array_prec_uni_igv, "||"));
+            $monto_desc = explode('||', implode($array_monto_desc, "||"));
+            $valor_neto = explode('||', implode($array_valor_neto, "||"));
+            $precio_linea_ = explode('||', implode($array_monto_line_total, "||"));
+        }else
+        {
+            $prod_cod = $array_prod_cod;
+            $prod_name = $array_prod_name;
+            $prod_cant = $array_prod_cant;
+            $precio_lista = $array_prec_list;
+            $descuento_ = $array_porc_dscu;
+            $precio_unitario = $array_prec_uni;
+            $prec_uni_igv = $array_prec_uni_igv;
+            $monto_desc = $array_monto_desc;
+            $valor_neto = $array_valor_neto;
+            $precio_linea_ = $array_monto_line_total;   
+        }
+
+        $pedido = $this->db->prepare("UPDATE orden_pedido SET cliente_id = :cliente, vendedor_id = :vendedor, distribuidora_id = :distribuidora, 
+                                                            fecha_orden = :fecha, precio = :precio, impuesto = :impuesto, precio_total = :precio_total, 
+                                                            pago_condicion = :condicion_pago, vendedor_registro = :vendedor_registro WHERE id = :id");
+        $pedido->bindParam(":cliente", $cliente);
+        $pedido->bindParam(":vendedor", $vendedor);
+        $pedido->bindParam(":distribuidora", $distribuidora);
+        $pedido->bindParam(":fecha", $fecha);
+        $pedido->bindParam(":precio", $precio);
+        $pedido->bindParam(":impuesto", $impuesto);
+        $pedido->bindParam(":precio_total", $precio_total);
+        $pedido->bindParam(":condicion_pago", $condicion_pago);
+        $pedido->bindParam(":vendedor_registro", $vendedor_registro);
+        $pedido->bindParam(":id", $_id);
+
+        if($pedido->execute())
+        {
+            $delete_ = $this->db->prepare("DELETE FROM orden_pedido_items WHERE orden_pedido_id = :id");
+            $delete_->bindParam(":id", $_id);
+            if($delete_->execute())
+            {
+                $orden_pedido_id = $_id;
+
+                $pedido_items = $this->db->prepare("INSERT INTO orden_pedido_items(producto_id, producto_dsc, unidades, precio_lista, precio_unitario, descuento, impuesto,precio_linea, orden_pedido_id) 
+                                                    VALUES (:prod_cod_var, :prod_name_var, :prod_cant_var, :precio_lista, :precio_unitario, :descuento, :impuesto, :precio_linea, :orden_pedido_id);");
+            
+                for($i = 0; $i <= count($prod_cod) - 1; $i++)
+                {
+                    if($prod_cod[$i] == null){$prod_cod_var = 0;}else{$prod_cod_var = $prod_cod[$i];}
+                    if($prod_name[$i] == null){$prod_name_var = 0;}else{$prod_name_var = $prod_name[$i];}
+                    if($prod_cant[$i] == null){$prod_cant_var = 0;}else{$prod_cant_var = $prod_cant[$i];}
+    
+                    if($precio_lista[$i] == null){$precio_lista_var = 0;}else{$precio_lista_var = $precio_lista[$i];}
+                    if($precio_unitario[$i] == null){$precio_unitario_var = 0;$impuesto_var = 0;}else{$precio_unitario_var = $precio_unitario[$i];$impuesto_var = round($precio_unitario_var * 0.18,2);}
+                    if($descuento_[$i] == null){$descuento_var = 0;}else{$descuento_var = $descuento_[$i];}
+                    #if($impuesto_[$i] == null){$impuesto_var = 0;}else{$impuesto_var = $impuesto_[$i];}
+                    if($precio_linea_[$i] == null){$precio_linea_var = 0;}else{$precio_linea_var = $precio_linea_[$i];}
+    
+                    $pedido_items->bindParam(':prod_cod_var', $prod_cod_var);
+                    $pedido_items->bindParam(':prod_name_var', $prod_name_var);
+                    $pedido_items->bindParam(':prod_cant_var', $prod_cant_var);
+                    $pedido_items->bindParam(':precio_lista', $precio_lista_var);
+                    $pedido_items->bindParam(':precio_unitario', $precio_unitario_var);
+                    $pedido_items->bindParam(':descuento', $descuento_var);
+                    $pedido_items->bindParam(':impuesto', $impuesto_var);
+                    $pedido_items->bindParam(':precio_linea', $precio_linea_var);
+                    $pedido_items->bindParam(':orden_pedido_id', $orden_pedido_id);
+    
+                    if($pedido_items->execute())
+                    {
+                        $output = 1;
+                    }else
+                    {
+                        $output = "ERROR 2 = ".errorPDO($pedido_items);
+                        return false;
+                    }
+                }
+            }
+        }
+        return $output;
+    }
+    public function _eliminar_pedido($id, $max_days)
     { 
+        $output = null;
+
+        $today = date("Y-m-d");
+
+        $select = $this->db->prepare("SELECT fecha_orden FROM orden_pedido WHERE id = :id");
+        $select->bindParam(":id", $id);
+        if($select->execute())
+        {
+            $query = $select->fetch(PDO::FETCH_ASSOC);
+            $fecha_o_p = $query['fecha_orden'];
+
+            $dias_pasados = dias_pasados($fecha_o_p, $today);
+        
+            if($dias_pasados <= $max_days)
+            {
+                $delete_ = $this->db->prepare("DELETE FROM orden_pedido WHERE id = :id;
+                                                DELETE FROM orden_pedido_items WHERE orden_pedido_id = :id;");
+                $delete_->bindParam(":id", $id);
+                if($delete_->execute())
+                {
+                    $output = 1;
+                }
+            }else
+            {
+                $output = "Fuera de fecha";
+            }
+        }
+        return $output;        
     }
     public function _listar_pedidos($vendedor, $fecha)
     {
@@ -755,12 +931,13 @@ Class PedidosModel
                                 <thead class="text-white" style="background-color:#4D7CAE;font-size:0.9em;">
                                     <th class="text-center print_this">ID</th>
                                     <th class="text-center print_this">Vendedor</th>
+                                    <th class="text-center print_this">Estado</th>
                                     <th class="text-center print_this">Ruc</th>
                                     <th class="text-center print_this">Cliente</th>
-                                    <th class="text-center print_this">Distribuidora</th>
-                                    <th class="text-center print_this">condicion pago</th>
-                                    <th class="text-center print_this">Producto código</th>
-                                    <th class="text-center print_this">Producto descripción</th>
+                                    <th class="text-center print_this">Dist.</th>
+                                    <th class="text-center print_this">Cond. pago</th>
+                                    <!--<th class="text-center print_this">Producto código</th>!-->
+                                    <th class="text-center print_this">Producto</th>
                                     <th class="text-center print_this">Cantidad</th>
                                     <th class="text-center">Acciones</th>
                                 </thead>
@@ -781,6 +958,7 @@ Class PedidosModel
                     $codigo_producto = $Query1['codigo_producto'];
                     $desc_producto = $Query1['desc_producto'];
                     $cantidad = $Query1['cantidad'];
+                    $estado = _estados_($Query1['estado']);
 
                     $button1 = '<a href="Pedidos/Editar?p='.$id.'" class="btn btn-default btn-sm waves-effect waves-light">Editar</a><br>';
                     // $button1 = '<button class="btn btn-default btn-sm waves-effect waves-light" onclick="return _buscar_pedido('.$id.');">Editar</button><br>';
@@ -808,11 +986,12 @@ Class PedidosModel
 
                     $result['id'] = $id;
                     $result['vendedor'] = $name_vendedor;
+                    $result['estado'] = $estado;
                     $result['cliente_ruc'] = $cliente_ruc;
                     $result['nombre_comercial'] =  $nombre_comercial;
                     $result['desc_dist'] = $desc_dist;
                     $result['condicion_pago'] = $condicion_pago;
-                    $result['codigo_producto'] = '<p style="font-size:0.85em;font-weight:bold;">'.$codigo_producto_f.'</p>';
+                    #$result['codigo_producto'] = '<p style="font-size:0.85em;font-weight:bold;">'.$codigo_producto_f.'</p>';
                     $result['desc_producto'] = '<p style="font-size:0.85em;font-weight:bold;">'.$desc_producto_f.'</p>';
                     $result['cantidad'] = $cantidad_f;
                     $result['acciones'] = $button1.$button2;
