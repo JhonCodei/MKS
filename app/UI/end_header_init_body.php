@@ -55,7 +55,8 @@ if($aviso == true && $padron == false){?>
  <?php }?>
     <div id="loader"></div>
         <!-- Begin page -->
-        <div id="wrapper" class="enlarged forced">
+        <div id="wrapper">
+        <!-- <div id="wrapper" class="enlarged forced"> -->
             <!-- Top Bar Start -->
             <div class="topbar">
                 <!-- LOGO -->

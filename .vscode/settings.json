@@ -1,6 +1,6 @@
 {
     "editor.fontFamily": "Source Code Pro",
-    "editor.fontWeight": "300",
+    "editor.fontWeight": "400",
     "editor.tabSize": 1,
     "files.exclude": {
         "**/.DS_Store": false,

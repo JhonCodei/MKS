@@ -3,11 +3,6 @@
         <p class="h1 header-title">
         <a href="javascript:void(0)" onclick="close_modal_await()" class="h2 waves-effect waves-light" style="color:#0CC243;">
         <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Nuevo Pedido</b>
-            <!-- <p class="text-muted m-b-30 font-14">
-            <button type="button" onclick="muestra_medica_form_direct(0);" class="btn btn-sm btn-default waves-effect waves-light" style="border-style:2px !important;">
-                <span class="fa fa-plus"></span>&nbsp;Descargar muestras
-            </button>
-            </p> -->
         </p>
         <div class="justify-content-center">
             <div class="media-container-column" data-form-type="formoid">                 
@@ -98,6 +93,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- <div class="input-group col-md-12">
+                            <textarea name="" class="form-control" id="" cols="2" rows="2" style="height:5px !important"></textarea>
+                        </div> -->
 
                         <div class="pt-1 table-responsive" style="width:100% !important;">
                         <br>

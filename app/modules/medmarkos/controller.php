@@ -22,7 +22,6 @@ Class MedmarkosController
         $css_js_1[] = __css_js__('highchart_MORE_JS');
         $css_js_1[] = __css_js__('bootstrap-select-min_CSS');
         
-
         #CSS_JS_2
         $css_js_2[] = __css_js__('bootstrap-filestyle_JS');
         $css_js_2[] = __css_js__('bootstrap-select-min_JS');

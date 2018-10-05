@@ -230,7 +230,7 @@ Class PedidosModel
                         $output .= ' <tr>
                                         <td class="text-center">
                                             <button class="btn btn-default btn-sm waves-effect waves-light" 
-                                            onclick="__send_values__inter('."'$target'".','."'prod_cod_$target~~prod_desc_$target'".', '."'$codigo~~$descripcion'".', '."'val~~text'".',  '."'_modal_buscar_productos'".')">
+                                            onclick="__send_values__inter('."'$target'".','."'prod_cod_$target~~prod_desc_$target'".', '."'$codigo~~$descripcion'".', '."'val~~val'".',  '."'_modal_buscar_productos'".')">
                                             <span class="fa fa-plus"></span></button>
                                             
                                         </td>
@@ -827,7 +827,7 @@ Class PedidosModel
 
         $pedido = $this->db->prepare("UPDATE orden_pedido SET cliente_id = :cliente, vendedor_id = :vendedor, distribuidora_id = :distribuidora, 
                                                             fecha_orden = :fecha, precio = :precio, impuesto = :impuesto, precio_total = :precio_total, 
-                                                            pago_condicion = :condicion_pago, vendedor_registro = :vendedor_registro WHERE id = :id");
+                                                            pago_condicion = :condicion_pago WHERE id = :id");#, vendedor_registro = :vendedor_registro
         $pedido->bindParam(":cliente", $cliente);
         $pedido->bindParam(":vendedor", $vendedor);
         $pedido->bindParam(":distribuidora", $distribuidora);
@@ -836,7 +836,7 @@ Class PedidosModel
         $pedido->bindParam(":impuesto", $impuesto);
         $pedido->bindParam(":precio_total", $precio_total);
         $pedido->bindParam(":condicion_pago", $condicion_pago);
-        $pedido->bindParam(":vendedor_registro", $vendedor_registro);
+        //$pedido->bindParam(":vendedor_registro", $vendedor_registro);
         $pedido->bindParam(":id", $_id);
 
         if($pedido->execute())

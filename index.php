@@ -6,8 +6,6 @@ $Error = NULL;                                 //Control de errores @string.
 
 // Mastercontroller
 
-
-
 if (isset($_GET['viewController']))
 {
 

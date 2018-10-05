@@ -7,7 +7,7 @@ function listar_pedido_sql()
 										orden_pedido.id AS id,
 										orden_pedido.vendedor_id AS vendedor,
 										orden_pedido.cliente_id AS cliente_ruc,
-										maestro_clientes.nombre_comercial AS nombre_comercial,
+										IFNULL(UPPER(maestro_clientes.nombre_comercial), ' - ') AS nombre_comercial,
 										orden_pedido.distribuidora_id AS cod_dist,
 										tbl_distribuidoras.distribuidora_descripcion AS desc_dist,
 										orden_pedido.fecha_orden AS fecha,
@@ -32,7 +32,7 @@ function listar_pedido_sql()
 										orden_pedido_items ON orden_pedido_id = orden_pedido.id
 														INNER JOIN
 										tbl_distribuidoras ON tbl_distribuidoras.distribuidora_codigo = orden_pedido.distribuidora_id
-														INNER JOIN
+														LEFT JOIN
 										maestro_clientes ON maestro_clientes.ruc = orden_pedido.cliente_id
 									WHERE
 										fecha_orden = :fecha

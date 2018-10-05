@@ -566,7 +566,8 @@ Class MedmarkosModel
             $med_cod = null;
             $med_cor = null;
             $med_turno = null;
-            $med_cod = (int)str_replace('77700', '', $DataRow[0]);
+            #$med_cod = (int)str_replace('77700', '', $DataRow[0]);
+            $med_cod = (int)$DataRow[0];
             $med_cor = $DataRow[1];
 
             if($med_cor == null || strlen($med_cor) == 0)
@@ -595,8 +596,8 @@ Class MedmarkosModel
             }
             
             $med_cat = (string)trim(strtoupper($DataRow[4]));
-            $med_inst = (string)trim($DataRow[6]);
-            $med_dir = (string)trim($DataRow[5]);
+            $med_inst = (string)trim($DataRow[5]);
+            $med_dir = (string)trim($DataRow[6]);
             $med_loc = (string)trim($DataRow[7]);
             $med_zona = (int)trim($DataRow[11]);
             $med_altbaja = (string)trim($DataRow[8]);
