@@ -11,8 +11,46 @@
  */
 var __AJAX__ = "ajax.php?request=";
 
+function validateNumber(event) {
+    var key = window.event ? event.keyCode : event.which;
+    if (event.keyCode === 8 || event.keyCode === 46) {
+        return true;
+    } else if ( key < 48 || key > 57 ) {
+        return false;
+    } else {
+        return true;
+    }
+};
+function validate_only_numbres(evt) {
+    var theEvent = evt || window.event;
+  
+    // Handle paste
+    if (theEvent.type === 'paste') {
+        key = event.clipboardData.getData('text/plain');
+    } else {
+    // Handle key press
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+    }
+    var regex = /[0-9]|\./;
+    if( !regex.test(key) ) {
+      theEvent.returnValue = false;
+      if(theEvent.preventDefault) theEvent.preventDefault();
+    }
+  }
 function __atras__() {
     window.history.back(1);
+}
+function __clear_post__(string)
+{
+    var data = string;
+    var src = string.indexOf("&");
+
+    if(src != -1)
+    {
+        data = string.replace("&", "-");
+    }
+    return data;
 }
 
 function __clear__(targets) {
@@ -260,9 +298,11 @@ function validate_length(str, max, min) {
 
 function max_length(str, max) {
     //event onkeypress 
+
     if (str.length <= max) {
         return true;
     } else {
-        return false;
+        // return false;
+        swal("error","OE TE PASASDTE","error");
     }
 }

@@ -53,6 +53,8 @@ function buscar_pedido_sql()
 										orden_pedido.pago_condicion AS condicion_pago,
 										orden_pedido.vendedor_registro AS creador_pedido,
 										orden_pedido.estado AS estado,
+										orden_pedido.notas AS notas,
+										orden_pedido.especial AS especial,
 										GROUP_CONCAT(orden_pedido_items.id
 														ORDER BY orden_pedido_items.id
 														SEPARATOR '||') AS id_items,
@@ -79,14 +81,17 @@ function buscar_pedido_sql()
 														SEPARATOR '||') AS impuesto,
 										GROUP_CONCAT(orden_pedido_items.precio_linea
 														ORDER BY orden_pedido_items.id
-														SEPARATOR '||') AS precio_linea
+														SEPARATOR '||') AS precio_linea,
+										GROUP_CONCAT(orden_pedido_items.observacion
+														ORDER BY orden_pedido_items.id
+														SEPARATOR '||') AS observacion
 									FROM
 										orden_pedido
 														INNER JOIN
 										orden_pedido_items ON orden_pedido_id = orden_pedido.id
 														INNER JOIN
 										tbl_distribuidoras ON tbl_distribuidoras.distribuidora_codigo = orden_pedido.distribuidora_id
-														INNER JOIN
+														LEFT JOIN
 										maestro_clientes ON maestro_clientes.ruc = orden_pedido.cliente_id
 									WHERE
 										orden_pedido.id = :id";
@@ -101,4 +106,19 @@ function propietario_pedido_sql()
 {
 		$sql = "SELECT orden_pedido.vendedor_id AS vendedor, orden_pedido.vendedor_registro AS vendedor_registro FROM orden_pedido WHERE orden_pedido.id = :id";
 		return $sql;
+}
+function _SQL_SRC_VENDEDOR()
+{
+		$sql = "SELECT 
+												representante_codigo AS codigo,
+												representante_nombre AS nombre
+										FROM
+												tbl_representantes
+										WHERE
+												representante_cargo IN(3)
+												AND representante_region IN (99,1)
+												AND representante_codigo NOT IN(218,51)
+																AND representante_estado = 'A'
+																AND representante_codigo = :vendedor";
+	return $sql;
 }

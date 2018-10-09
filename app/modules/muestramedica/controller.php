@@ -263,14 +263,14 @@ Class MuestramedicaController
                 /* VALIDAR MAXIMO N DIAS*/
                 $max_days = max_days(date('Y-m-d'), $fecha_mm);
 
-                /*if($user_session != 127 && $user_session != 125 && $user_session != 124 && $user_session != 753 && $user_session != 740 && $user_session != 26 && $user_session != 48)##AUTORIZADOS COD REPRE ##&& $user_session != 0
+                if($user_session != 999)##AUTORIZADOS COD REPRE ##&& $user_session != 0
                 {
                     if($max_days > 2)
                     {
                         print 'Solo se permite el ingreso con un maximo de 2 días !';
                         return false;
                     }
-                }*/
+                }
 
                 // if($max_days > 2)
                 // {
@@ -337,25 +337,20 @@ Class MuestramedicaController
         $today = date('Y-m-d');
         /* 2 dias como maximo */
         $newtoday = strtotime('-2 day', strtotime($today));
-        
         $newtoday2 = date("Y-m-d", $newtoday);
         
         /*TODOS*/
-        $Class = new MuestramedicaModel();
-        print $Class->eliminar_mm($cmp, $fecha, $user_session);
+        // $Class = new MuestramedicaModel();
+        // print $Class->eliminar_mm($cmp, $fecha, $user_session);
         /**/
-        /*if($user_session == 127 || $user_session == 125 || $user_session == 124 || $user_session == 753 || $user_session == 740 || $user_session == 26  || $user_session == 48)##AUTORIZADOS COD REPRE ###|| $user_session == 0
+        if($user_session == 999)##AUTORIZADOS COD REPRE ###|| $user_session == 0
         {
-            require_once model('Ruteo');
-
             $Class = new MuestramedicaModel();
             print $Class->eliminar_mm($cmp, $fecha, $user_session);
         }else
         {
             if($newtoday2 <= $fecha)
             {
-                require_once model('Ruteo');
-
                 $Class = new MuestramedicaModel();
                 print $Class->eliminar_mm($cmp, $fecha, $user_session);
             }else
@@ -363,41 +358,10 @@ Class MuestramedicaController
                 print 0;
                 return false;
             }
-        }*/
-
-        // if($newtoday2 <= $fecha)
-        // {
-        //     require_once model('Ruteo');
-
-        //     $Class = new MuestramedicaModel();
-        //     print $Class->eliminar_mm($cmp, $fecha, $user_session);
-        // }else
-        // {
-        //     print 0;
-        //     return false;
-        // }
+        }
 
         /* 2 dias como maximo */
 
-        /* LIBEARAR PARA TODOS */
-        /*require_once model('Ruteo');
-
-        $Class = new MuestramedicaModel();
-        print $Class->eliminar_mm($cmp, $fecha, $user_session);*/
-        /* LIBEARAR PARA TODOS */
-        
-        /* SOLO ELIMIANR EL MISMO DIA*/
-        // if($today == $fecha)// if($fecha)#($fecha)#($today == $fecha)
-        // {
-        //     require_once model('Ruteo');
-
-        //     $Class = new MuestramedicaModel();
-        //     print $Class->eliminar_mm($cmp, $fecha, $user_session);
-        // }else
-        // {
-        //     print 0;
-        //     return false;
-        // }
         /* SOLO ELIMIANR EL MISMO DIA*/
     }
     public function cobertura_visitados_detalle()

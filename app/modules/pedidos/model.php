@@ -8,6 +8,21 @@ Class PedidosModel
         #__SQL__();
     }
     #__functions__
+    public function search_repre_exist_lima($vendedor)
+    {
+        $output = false;
+
+        $consulta = $this->db->prepare(_SQl_SRC_VENDEDOR());
+        $consulta->bindParam(":vendedor", $vendedor);
+        if($consulta->execute())
+        {
+            if($consulta->rowCount() > 0)
+            {
+                $output = true;
+            }
+        }
+        return $output;
+    }
     public function validar_cliente_ruc($ruc)
     {
         $output = null;
@@ -358,10 +373,11 @@ Class PedidosModel
         $condicion_pago = $data->condicion_pago;
         $fecha = $data->fecha;
         $distribuidora = $data->distribuidora;
-        $estado_ = $data->estado_;
+        $especial = $data->especial;
         $vendedor = $data->vendedor;
         $vendedor_registro = $data->vendedor_registro;
-
+        $notas = $data->notas;
+        
         $array_prod_cod = $data->array_prod_cod;
         $array_prod_name = $data->array_prod_name;
         $array_prod_cant = $data->array_prod_cant;
@@ -371,6 +387,7 @@ Class PedidosModel
         $array_prec_uni_igv = $data->array_prec_uni_igv;
         $array_monto_desc = $data->array_monto_desc;
         $array_valor_neto = $data->array_valor_neto;
+        $array_observaciones = $data->array_observaciones;
         $array_monto_line_total = $data->array_monto_line_total;
 
         $precio = array_sum($array_valor_neto);
@@ -389,6 +406,7 @@ Class PedidosModel
             $monto_desc = explode('||', implode($array_monto_desc, "||"));
             $valor_neto = explode('||', implode($array_valor_neto, "||"));
             $precio_linea_ = explode('||', implode($array_monto_line_total, "||"));
+            $observaciones_ = explode('||', implode($array_observaciones, "||"));
         }else
         {
             $prod_cod = $array_prod_cod;
@@ -401,12 +419,13 @@ Class PedidosModel
             $monto_desc = $array_monto_desc;
             $valor_neto = $array_valor_neto;
             $precio_linea_ = $array_monto_line_total;
+            $observaciones_ = $array_observaciones;
             
         }
 
         $pedido = $this->db->prepare("INSERT INTO orden_pedido(cliente_id, vendedor_id, 
-                                                        distribuidora_id, fecha_orden, precio, impuesto, precio_total, pago_condicion, vendedor_registro) 
-                                        VALUES (:cliente, :vendedor, :distribuidora, :fecha, :precio, :impuesto, :precio_total, :condicion_pago, :vendedor_registro)");
+                                                        distribuidora_id, fecha_orden, precio, impuesto, precio_total, pago_condicion, notas, vendedor_registro, especial) 
+                                        VALUES (:cliente, :vendedor, :distribuidora, :fecha, :precio, :impuesto, :precio_total, :condicion_pago, :notas, :vendedor_registro, :especial)");
         $pedido->bindParam(":cliente", $cliente);
         $pedido->bindParam(":vendedor", $vendedor);
         $pedido->bindParam(":distribuidora", $distribuidora);
@@ -416,13 +435,15 @@ Class PedidosModel
         $pedido->bindParam(":precio_total", $precio_total);
         $pedido->bindParam(":condicion_pago", $condicion_pago);
         $pedido->bindParam(":vendedor_registro", $vendedor_registro);
+        $pedido->bindParam(":notas", $notas);
+        $pedido->bindParam(":especial", $especial);
 
         if($pedido->execute())
         {
             $orden_pedido_id = $this->db->lastInsertId();
 
-            $pedido_items = $this->db->prepare("INSERT INTO orden_pedido_items(producto_id, producto_dsc, unidades, precio_lista, precio_unitario, descuento, impuesto,precio_linea, orden_pedido_id) 
-                                                VALUES (:prod_cod_var, :prod_name_var, :prod_cant_var, :precio_lista, :precio_unitario, :descuento, :impuesto, :precio_linea, :orden_pedido_id);");
+            $pedido_items = $this->db->prepare("INSERT INTO orden_pedido_items(producto_id, producto_dsc, unidades, precio_lista, precio_unitario, descuento, impuesto,precio_linea, observacion, orden_pedido_id) 
+                                                VALUES (:prod_cod_var, :prod_name_var, :prod_cant_var, :precio_lista, :precio_unitario, :descuento, :impuesto, :precio_linea, :observacion, :orden_pedido_id);");
         
             for($i = 0; $i <= count($prod_cod) - 1; $i++)
             {
@@ -443,6 +464,7 @@ Class PedidosModel
                 $pedido_items->bindParam(':precio_unitario', $precio_unitario_var);
                 $pedido_items->bindParam(':descuento', $descuento_var);
                 $pedido_items->bindParam(':impuesto', $impuesto_var);
+                $pedido_items->bindParam(':observacion', $observaciones_[$i]);
                 $pedido_items->bindParam(':precio_linea', $precio_linea_var);
                 $pedido_items->bindParam(':orden_pedido_id', $orden_pedido_id);
 
@@ -461,6 +483,7 @@ Class PedidosModel
     public function _buscar_pedido($id)
     {
         $output = null;
+        $checked = null;
 
         $runQuery1 = $this->db->prepare(buscar_pedido_sql());
         $runQuery1->bindParam(":id", $id);
@@ -486,8 +509,13 @@ Class PedidosModel
             $precio_unitario = $Query1['precio_unitario'];
             $descuento = $Query1['descuento'];
             $impuesto = $Query1['impuesto'];
+            $observacion = $Query1['observacion'];
             $precio_linea = $Query1['precio_linea'];
             $estado = _estados_($Query1['estado']);
+            $notas = $Query1['notas'];
+            $especial = $Query1['especial'];
+
+            if($especial == 1){$checked = 'checked';}
 
 
             if(strpos($codigo_producto, '||') !== FALSE)
@@ -500,6 +528,7 @@ Class PedidosModel
                 $descuento_ = explode('||', $descuento);
                 $impuesto_ = explode('||', $impuesto);
                 $precio_linea_ = explode('||', $precio_linea);
+                $observacion_ = explode('||', $observacion);
                 
             }else
             {
@@ -511,6 +540,7 @@ Class PedidosModel
                 $descuento_[] = $descuento;
                 $impuesto_[] = $impuesto;
                 $precio_linea_[] = $precio_linea;
+                $observacion_[] = $observacion;
                 
             }
 
@@ -518,203 +548,250 @@ Class PedidosModel
             $new_elent = $count+1;
             $DELSQL = "-";
             
-            $output = '<div class="card-box col-lg-12">
+            $output = '<div class="card-box col-md-12">
             <p class="h1 header-title">
             <a href="javascript:void(0)" onclick="close_modal_await()" class="h2 waves-effect waves-light" style="color:#0CC243;">
             <span class="fa fa-arrow-circle-left"></span></a> &nbsp;<b class="h2 text-dark" >Editar Pedido</b>
-    
             </p>
-            <div class="justify-content-center">
-                <div class="media-container-column" data-form-type="formoid">                 
-                    <div class="mbr-form text-center" data-form-title="">
-                        <div class="row row-sm-offset">
-                        <label for="" id="lbl_id"></label>
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Fecha</span>
-                                <input type="text" id="fecha" readonly="true" class="form-control text-center border border-secondary" value="'.$fecha.'">
+              <div class="row">
+                <div class="col-md-4">
+                    <div class="input-group"> 
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Fecha</span>
+                        <input type="text" id="fecha" readonly="true" class="form-control text-center border border-secondary" value="'.$fecha.'">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group"> 
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cond. pago</span>
+                        <select class="form-control border border-secondary" id="condicion_pago">
+                        '.condicion_pago($condicion_pago).'
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group"> 
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Distribuidora</span>
+                        <select class="form-control border border-secondary" id="distribuidora">
+                        '.distribuidoras($cod_dist).'
+                        </select>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Ruc</span>
+                        <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect">
+                            <i class="fa fa-search" onclick="return _buscar_cliente();"></i></span>
+                        <input type="text" id="cliente_ruc" class="form-control text-center border border-secondary" onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc" value="'.$cliente_ruc.'">
+                        <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__('."'cliente_ruc'".','."'cliente_name'".');"><i class="fa fa-trash"></i></span>   
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cliente</span>
+                        <input type="text" id="cliente_name" class="form-control text-center border border-secondary" readonly="true" placeholder="Razón social" value="'.$nombre_comercial.'">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Codigo</span>
+                        <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect" 
+                                    onclick="return _buscar_vendedor();"><i class="fa fa-search"></i></span>
+
+                        <input type="text" class="form-control text-center border border-secondary" id="cod_vend"
+                                    onkeypress="return max_length(this.value, 3);" placeholder="-" value="'.$vendedor.'">
+                        <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect"
+                                    onclick="__clear__('."'cod_vend,name_vend'".');"><i class="fa fa-trash"></i></span>    
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                    <div class="input-group"> 
+                        <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Vendedor</span>
+                        <input type="text" class="form-control text-center border border-secondary" readonly="true" placeholder="-" id="name_vend" value="'.$name_vendedor.'">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group"> 
+                        <button  type="button" onclick="return _actualizar_pedido('.$id.');" id="button_on_insert" class="col-lg-6 btn btn-default waves-effect waves-light border border-secondary">
+                            <span class="fa fa-plus"></span>&nbsp;Guardar</button>
+                        <button type="button" onclick="close_modal_await()" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
+                            <span class="fa fa-close"></span>&nbsp;Cancelar</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                  <table class="table table-sm text-center">
+                    <thead style="background-color:#476269;font-size:0.75em;" class="text-center text-white">
+                      <tr>
+                        <th class="text-center">Monto Bruto</th>
+                        <th class="text-center">Descuento</th>
+                        <th class="text-center">Monto Imponible</th>
+                        <th class="text-center">IGV</th>
+                        <th class="text-center">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody  style="font-size:0.85em;color:black;">
+                        <tr>
+                            <td class="text-center border-prsnl2" id="sm_m_b">0.00</td>
+                            <!-- <td class="text-center border-prsnl2">0.00</td> -->
+                            <td class="text-center border-prsnl2" id="sm_desc">0.00</td>
+                            <!-- <td class="text-center border-prsnl2">0.00</td> -->
+                            <td class="text-center border-prsnl2" id="sm_m_i">0.00</td>
+                            <td class="text-center border-prsnl2" id="sm_igv">0.00</td>
+                            <td class="text-center border-prsnl2 bck_total" id="sm_total">0.00</td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2">
+                    <div class="checkbox checkbox-primary">
+                        <input id="checkbox1" type="checkbox" '.$checked.'>
+                        <label for="checkbox1" style="color:black;">Precio Especial</label>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <textarea name="" id="notas" class="form-control text-center border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 200);" cols="100" rows="10"></textarea>
+                </div>
+            </div>
+                <div class="col-lg-12">
+                <br>
+                    <label for="" class="text-center h5 font-weight-bold text-dark">Estado: 
+                    <label id="lbl_status" class="text-center h6 font-weight-bold text-primary">'.$estado.'</label></label>
+                </div>
+              <!-- tabla eventos  -->
+              <div class="row">
+              <div class="pt-1 table-responsive" style="width:100% !important;">
+                  <table id="table-pedidos-add" class="table table-striped table-condensed table-bordered table-sm"> 
+                    <thead style="background-color:#476269;" class="text-center text-white">
+                      <tr>
+                        <th class="text-center text-white" style="width:1% !important;">
+                            <div class="pull-left">
+                                <button type="button" onclick="return newElement(event, '.$new_elent.', '."'tr'".', '."'insertar'".');" class="btn btn-sm btn-primary waves-effect waves-light">
+                                    <span class="fa fa-plus"></span>
+                                </button>
                             </div>
-    
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cond. pago</span>
-                                <select class="form-control border border-secondary" id="condicion_pago">
-                                '.condicion_pago($condicion_pago).'
-                                </select>
-                            </div>
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Distribuidora</span>
-                                <select class="form-control border border-secondary" id="distribuidora">
-                                '.distribuidoras($cod_dist).'
-                                </select>
-                            </div> 
-    
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Ruc</span>
-                                <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect">
-                                    <i class="fa fa-search" onclick="return _buscar_cliente();"></i></span>
-                                <input type="text" id="cliente_ruc" class="form-control text-center border border-secondary"
-                                            onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc" value="'.$cliente_ruc.'">
-                                <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" 
-                                            onclick="__clear__('."'cliente_ruc'".','."'cliente_name'".');">
-                                    <i class="fa fa-trash"></i></span>    
-                            </div>
-    
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Cliente</span>
-                                <input type="text" id="cliente_name" class="form-control text-center border border-secondary" readonly="true" placeholder="Razón social" value="'.$nombre_comercial.'">
-                            </div>
-    
-                            <div class="input-group col-md-4">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Codigo</span>
-                                <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect" 
-                                            onclick="return _buscar_vendedor();"><i class="fa fa-search"></i></span>
-    
-                                <input type="text" class="form-control text-center border border-secondary" id="cod_vend"
-                                            onkeypress="return max_length(this.value, 3);" placeholder="-" value="'.$vendedor.'">
-                                <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect"
-                                            onclick="__clear__('."'cod_vend,name_vend'".');"><i class="fa fa-trash"></i></span>    
-                            </div>
-    
-                            <div class="input-group col-md-4 ">
-                                <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Vendedor</span>
-                                <input type="text" class="form-control text-center border border-secondary" readonly="true" placeholder="-" id="name_vend" value="'.$name_vendedor.'">
-                            </div>
-    
-                            <div class="input-group col-md-4 ">
-                                <button  type="button" onclick="return _actualizar_pedido('.$id.');" id="button_on_insert"
-                                                class="col-lg-6 btn btn-default waves-effect waves-light border border-secondary">
-                                <span class="fa fa-plus"></span>&nbsp;Guardar</button>
-                                <!-- return back page -->
-                                <button type="button" onclick="close_modal_await()" class="col-lg-6 btn btn-danger waves-effect waves-light border border-secondary">
-                                <span class="fa fa-close"></span>&nbsp;Cancelar</button>
-                                
-                            </div>
-                            <div class="col-md-4 table-responsive text-center">
-                                <table class="" style="font-weight: bold;width:100%">
-                                    <thead style="background-color:#476269;font-size:0.75em;" class="text-center text-white">
-                                        <th class="text-center border-prsnl2">Monto Bruto</th>
-                                        <!-- <th class="text-center border-prsnl2">% Dscto.</th> -->
-                                        <th class="text-center border-prsnl2">Descuento</th>
-                                        <!-- <th class="text-center border-prsnl2">Monto Isc.</th> -->
-                                        <th class="text-center border-prsnl2">Monto Imponible</th>
-                                        <th class="text-center border-prsnl2">IGV</th>
-                                        <th class="text-center border-prsnl2">Total</th>
-                                    </thead>
-                                    <tbody  style="font-size:0.85em;color:black;">
-                                        <tr>
-                                            <td class="text-center border-prsnl2" id="sm_m_b">0.00</td>
-                                            <!-- <td class="text-center border-prsnl2">0.00</td> -->
-                                            <td class="text-center border-prsnl2" id="sm_desc">0.00</td>
-                                            <!-- <td class="text-center border-prsnl2">0.00</td> -->
-                                            <td class="text-center border-prsnl2" id="sm_m_i">0.00</td>
-                                            <td class="text-center border-prsnl2" id="sm_igv">0.00</td>
-                                            <td class="text-center border-prsnl2 bck_total" id="sm_total">0.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-    
-                            <div class="pt-1 table-responsive" style="width:100% !important;">
-                            <br>
-                            <label for="" class="text-center h5 font-weight-bold text-dark">Estado: 
-                                <label id="lbl_status" class="text-center h6 font-weight-bold text-primary">'.$estado.'</label></label>
-                                
-                                <table id="table-pedidos-add" class="table table-striped table-condensed table-bordered table-sm">
-                                <thead style="background-color:#476269;" class="text-center text-white">
-                                    <th class="text-center text-white" style="width:1% !important;">
-                                        <div class="pull-left">
-                                        <button type="button" onclick="return newElement(event, '.$new_elent.', '."'tr'".', '."'insertar'".');" class="btn btn-sm btn-primary waves-effect waves-light">
-                                            <span class="fa fa-plus"></span>
-                                        </button>
-                                        </div>
-                                    </th>
-                                    <th class="text-center text-white">
-                                        <label for="" style="padding-top: 6px !important;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Producto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                    </th>
-                                    <th class="text-center text-white">
-                                        <label for="" style="padding-top: 6px !important;">&nbsp;Precios&nbsp;</label>
-                                    </th>
-                                    <th class="text-center text-white">
-                                        <label for="" style="padding-top: 6px !important;">&nbsp;&nbsp;&nbsp;&nbsp;Valores&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                    </th>
-                                </thead>
-    
-                                    <tbody id="parent-div_insertar">';
-                                    
+                        </th>
+                        <th style="width: 10% important;" class="text-center text-white">
+                            <label for="">Producto</label>
+                        </th>
+                        <th style="width: 10% important;" class="text-center text-white">
+                            <label for="">Precios</label>
+                        </th>
+                        <th style="width: 10% important;" class="text-center text-white">
+                            <label for="">Valores</label>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="parent-div_insertar">';
+                                                
                         for ($i = 0; $i <= $count-1; $i++)
                         { 
                             $monto_desc_ = round($cantidad_[$i] * ($precio_lista_[$i] * ($descuento_[$i] / 100)), 2);
                             $valor_neto_ = round($cantidad_[$i] * ($precio_lista_[$i] - ($precio_lista_[$i] * ($descuento_[$i] / 100))), 2);
 
                             $n = $i+1;
-                            $output .=  '<tr id="tr'.$n.'">
-                                            <!-- button restar -->
-                                            <td>
-                                                <button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove('."'tr".$n."'".');">
-                                                <span class="fa fa-minus"></span></button>
-                                            </td>
-                                            <!-- button restar -->
-                                            <td>
-                                                <div class="input-group">
-                                                <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect"
-                                                            onclick="return _buscar_producto('.$n.');" ><i class="fa fa-search"></i></span>
-                                                    <input type="number" value="'.$codigo_producto_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input"
-                                                            onchange="precio_lista_x_prod_x_dist('.$n.');" onblur="precio_lista_x_prod_x_dist('.$n.');_buscar_producto('.$n.');" 
-                                                            placeholder="Cod." name="prod_cod_insertar[]" id="prod_cod_'.$n.'">
-                                                </div>
-                                                <div style="border:1px solid black;color:black;">
-                                                <span class="input-group-addon input-sm bg-inverse text-white  font-weight-bold border border-secondary inp-g-ad_alter">Producto</span>
-                                                    <!-- <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Producto"
-                                                                id="prod_desc_1" name="prod_desc_insertar[]"> -->
-                                                    <label class="label_input_producto" id="prod_desc_'.$n.'" name="prod_desc_insertar[]">'.$desc_producto_[$i].'</label>
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-dark inp-g-ad_alter">Cant.</span>
-                                                    <input type="number" value="'.$cantidad_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant."
-                                                                id="cant_'.$n.'" name="prod_cant_insertar[]" onchange="precio_lista_x_prod_x_dist('.$n.');"  onblur="precio_lista_x_prod_x_dist('.$n.');"  onkeypress="return max_length(this.value, 4);">
-                                                </div>
-                                            </td>
-                                            <!-- button fila productos -->
-                                         
-                                            <!-- button fila INFO -->
-                                            <td>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>list.</span>
-                                                    <input type="text" readonly="true" value="'.$precio_lista_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_'.$n.'" name="prec_list_insertar[]">
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Desc.<br>%</span>
-                                                    <input type="text" readonly="true" value="'.$descuento_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_'.$n.'" name="porc_desc_insertar[]">
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>
-                                                    <input type="text" readonly="true" value="'.$precio_unitario_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_'.$n.'" name="prec_unidad_insertar[]">
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>
-                                                    <input type="text" readonly="true" value="'.$impuesto_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_'.$n.'" name="prec_uni_igv_insertar[]">
-                                                </div>
-                                            </td>
-                                            <!-- button fila INFO -->
-                                            <!-- button fila VALORES -->
-                                            <td>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>
-                                                    <input type="text" readonly="true" value="'.$monto_desc_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_'.$n.'" name="monto_desc_insertar[]">
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Valor<br>Neto</span>
-                                                    <input type="text" readonly="true" value="'.$valor_neto_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_'.$n.'" name="valor_neto_insertar[]">
-                                                </div>
-                                                <div>
-                                                    <span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto</span>
-                                                    <input type="text" readonly="true" value="'.$precio_linea_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_'.$n.'" name="monto_line_total_insertar[]">
-                                                </div>
-                                            </td>
-                                            <!-- button fila VALORES -->
-                                        </tr>';
+
+                            $output .= '<tr id="tr'.$n.'">
+                            <td>
+                            <button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove('."'tr".$n."'".');elementRemove('."'2tr".$n."'".');">
+                            <span class="fa fa-minus"></span>
+                            </button>
+                            </td>
+                            <td style="width:30% !important;">
+                            <div class="row">
+                            <div class="col-md-4">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect" onclick="return _buscar_producto('.$n.');" ><i class="fa fa-search"></i></span>
+                            <input type="number" value="'.$codigo_producto_[$i].'" style="font-size:0.75em !important;" class="form-control input-sm text-center border border-secondary font_inside_input" onchange="precio_lista_x_prod_x_dist('.$n.');" onblur="precio_lista_x_prod_x_dist('.$n.');_buscar_producto('.$n.');" placeholder="Cod." name="prod_cod_insertar[]" id="prod_cod_'.$n.'">
+                            </div>
+                            </div>
+                            <div class="col-md-4">
+                            <div>
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-dark inp-g-ad_alter">Producto</span>
+                            <textarea readonly="true" style="width: 100%;height:35px;font-size:0.7em !important;resize:none;" class="font_inside_input input-sm"  id="prod_desc_'.$n.'" name="prod_desc_insertar[]">'.$desc_producto_[$i].'</textarea>
+                            </div>
+                            </div>
+                            <div class="col-md-4" >
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-dark inp-g-ad_alter">Cant.</span>
+                            <input type="number" value="'.$cantidad_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant." id="cant_'.$n.'" name="prod_cant_insertar[]" onchange="precio_lista_x_prod_x_dist('.$n.');"  onblur="precio_lista_x_prod_x_dist('.$n.');" onkeypress="return max_length(this.value, 4);">
+                            </div>
+                            </div>
+                            </div></td>
+                            <td style="width:30% !important;">
+                            <div class="row">
+                            <div class="col-md-3">
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Prec.<br>list.</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$precio_lista_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_'.$n.'" name="prec_list_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            <div class="col-md-3">
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Desc.<br>%</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$descuento_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_'.$n.'" name="porc_desc_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            <div class="col-md-3" >
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$precio_unitario_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_'.$n.'" name="prec_unidad_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            <div class="col-md-3">
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>
+                            <input type="text" readonly="true"  style="font-size:0.8em !important;" value="'.$impuesto_[$i].'" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_'.$n.'" name="prec_uni_igv_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            </div></td>
+                            <td style="width:30% !important;">
+                            <div class="row">
+                            <div class="col-md-4">
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$monto_desc_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_'.$n.'" name="monto_desc_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            <div class="col-md-4">
+                            <form class="form-inline">
+                            <div class="input-group">
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Valor<br>Neto</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$valor_neto_.'" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_'.$n.'" name="valor_neto_insertar[]">
+                            </div>
+                            </form>
+                            </div>
+                            <div class="col-md-4">
+                            <div>
+                            <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto</span>
+                            <input type="text" readonly="true" style="font-size:0.8em !important;" value="'.$precio_linea_[$i].'"  class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_'.$n.'" name="monto_line_total_insertar[]">
+                            </div>
+                            </div>
+                            </div>
+                            </td>
+                            </tr>
+                            <tr id="2tr'.$n.'">
+                            <td>
+                            </td>
+                            <td colspan="3">
+                            <input type="text" value="'.$observacion_[$i].'" class="form-control border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 130);" id="obs_line_'.$n.'" name="obs_line_insertar[]">
+                            </td>
+                            </tr>';
                         }
-                                   
-                                   
                                 $output .='</tbody>
                                 </table>
                             </div>
@@ -724,11 +801,6 @@ Class PedidosModel
                 </div>
             </div>
         </div>';
-
-
-
-
-
 
         }else
         {
@@ -780,8 +852,9 @@ Class PedidosModel
         $condicion_pago = $data->condicion_pago;
         $fecha = $data->fecha;
         $distribuidora = $data->distribuidora;
-        #$estado_ = $data->estado_;
+        $notas = $data->notas;
         $vendedor = $data->vendedor;
+        $especial = $data->especial;
         $vendedor_registro = $data->vendedor_registro;
 
         $array_prod_cod = $data->array_prod_cod;
@@ -794,6 +867,7 @@ Class PedidosModel
         $array_monto_desc = $data->array_monto_desc;
         $array_valor_neto = $data->array_valor_neto;
         $array_monto_line_total = $data->array_monto_line_total;
+        $array_observaciones = $data->array_observaciones;
 
         $precio = array_sum($array_valor_neto);
         $impuesto = round($precio* 0.18, 2);
@@ -811,6 +885,7 @@ Class PedidosModel
             $monto_desc = explode('||', implode($array_monto_desc, "||"));
             $valor_neto = explode('||', implode($array_valor_neto, "||"));
             $precio_linea_ = explode('||', implode($array_monto_line_total, "||"));
+            $observaciones_ = explode('||', implode($array_observaciones, "||"));
         }else
         {
             $prod_cod = $array_prod_cod;
@@ -822,12 +897,13 @@ Class PedidosModel
             $prec_uni_igv = $array_prec_uni_igv;
             $monto_desc = $array_monto_desc;
             $valor_neto = $array_valor_neto;
-            $precio_linea_ = $array_monto_line_total;   
+            $precio_linea_ = $array_monto_line_total;
+            $observaciones_ = $array_observaciones;
         }
 
         $pedido = $this->db->prepare("UPDATE orden_pedido SET cliente_id = :cliente, vendedor_id = :vendedor, distribuidora_id = :distribuidora, 
                                                             fecha_orden = :fecha, precio = :precio, impuesto = :impuesto, precio_total = :precio_total, 
-                                                            pago_condicion = :condicion_pago WHERE id = :id");#, vendedor_registro = :vendedor_registro
+                                                            pago_condicion = :condicion_pago, especial = :especial, notas = :notas WHERE id = :id");#, vendedor_registro = :vendedor_registro
         $pedido->bindParam(":cliente", $cliente);
         $pedido->bindParam(":vendedor", $vendedor);
         $pedido->bindParam(":distribuidora", $distribuidora);
@@ -836,7 +912,8 @@ Class PedidosModel
         $pedido->bindParam(":impuesto", $impuesto);
         $pedido->bindParam(":precio_total", $precio_total);
         $pedido->bindParam(":condicion_pago", $condicion_pago);
-        //$pedido->bindParam(":vendedor_registro", $vendedor_registro);
+        $pedido->bindParam(":notas", $notas);
+        $pedido->bindParam(":especial", $especial);
         $pedido->bindParam(":id", $_id);
 
         if($pedido->execute())
@@ -847,8 +924,8 @@ Class PedidosModel
             {
                 $orden_pedido_id = $_id;
 
-                $pedido_items = $this->db->prepare("INSERT INTO orden_pedido_items(producto_id, producto_dsc, unidades, precio_lista, precio_unitario, descuento, impuesto,precio_linea, orden_pedido_id) 
-                                                    VALUES (:prod_cod_var, :prod_name_var, :prod_cant_var, :precio_lista, :precio_unitario, :descuento, :impuesto, :precio_linea, :orden_pedido_id);");
+                $pedido_items = $this->db->prepare("INSERT INTO orden_pedido_items(producto_id, producto_dsc, unidades, precio_lista, precio_unitario, descuento, impuesto,precio_linea, observacion, orden_pedido_id) 
+                                                    VALUES (:prod_cod_var, :prod_name_var, :prod_cant_var, :precio_lista, :precio_unitario, :descuento, :impuesto, :precio_linea, :observacion, :orden_pedido_id);");
             
                 for($i = 0; $i <= count($prod_cod) - 1; $i++)
                 {
@@ -870,6 +947,7 @@ Class PedidosModel
                     $pedido_items->bindParam(':descuento', $descuento_var);
                     $pedido_items->bindParam(':impuesto', $impuesto_var);
                     $pedido_items->bindParam(':precio_linea', $precio_linea_var);
+                    $pedido_items->bindParam(':observacion', $observaciones_[$i]);
                     $pedido_items->bindParam(':orden_pedido_id', $orden_pedido_id);
     
                     if($pedido_items->execute())

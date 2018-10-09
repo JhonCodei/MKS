@@ -167,7 +167,9 @@ function __css_js__($element)
     $e['bootstrap-select-min_CSS'] = "plugins/bootstrap-select/dist/css/bootstrap-select.min.css";
     $e['bootstrap-select-min_JS'] = "plugins/bootstrap-select/dist/js/bootstrap-select.min.js";
     $e['bootstrap-filestyle_JS'] = "plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js";
-
+    $e['bootstrap-timepicker_CSS'] = "plugins/timepicker/bootstrap-timepicker.min.css";
+    $e['bootstrap-timepicker_JS'] = "plugins/timepicker/bootstrap-timepicker.js";
+    
     return $e[$element];
 }
 

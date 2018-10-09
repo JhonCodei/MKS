@@ -13,12 +13,10 @@ $(function()// validations
         //console.log("get p=" + get_);
         if(get_ != false)
         {
-            _buscar_pedido(get_);
+            _buscar_pedido(get_);       
         }
     }
 });
-
-console.log("10076008979");
 
 change_event();
 
@@ -54,13 +52,13 @@ function newElement(e, i, element, form)
     <div class="col-md-4">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect" onclick="return _buscar_producto(' + i + ');"><i class="fa fa-search"></i></span>\
-    <input type="number"  class="form-control input-sm text-center border border-secondary font_inside_input"  placeholder="Cod." name="prod_cod_' + form + '[]" id="prod_cod_' + i + '" onblur="precio_lista_x_prod_x_dist('+ i +');_buscar_producto('+ i +');" onchange="precio_lista_x_prod_x_dist('+ i +');">\
+    <input type="number" style="font-size:0.75em !important;" class="form-control input-sm text-center border border-secondary font_inside_input"  placeholder="Cod." name="prod_cod_' + form + '[]" id="prod_cod_' + i + '" onblur="precio_lista_x_prod_x_dist('+ i +');_buscar_producto('+ i +');" onchange="precio_lista_x_prod_x_dist('+ i +');">\
     </div>\
     </div>\
     <div class="col-md-4">\
     <div>\
     <span class="input-group-addon input-sm bg-inverse text-white border border-dark inp-g-ad_alter">Producto</span>\
-    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prod_desc_' + i + '" name="prod_desc_' + form + '[]">\
+    <textarea readonly="true" style="width: 100%;height:35px;font-size:0.7em !important;resize:none;" class="font_inside_input input-sm" id="prod_desc_' + i + '" name="prod_desc_' + form + '[]"></textarea>\
     </div>\
     </div>\
     <div class="col-md-4" >\
@@ -136,83 +134,12 @@ function newElement(e, i, element, form)
     <td>\
     </td>\
     <td colspan="3">\
-    <input type="text" class="form-control" placeholder="observaciones" onkeypress="return max_length(this.value, 130);" id="obs_line_' + i + '" name="obs_line_' + form + '[]">\
+    <input type="text" class="form-control border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 130);" id="obs_line_' + i + '" name="obs_line_' + form + '[]">\
     </td>\
     </tr>';
 
     i++;
     $("#parent-div_" + form).prepend( html );
-}
-function newElement11(e, i, element, form)
-{
-    var html;
-
-    html = '<tr id="' + element + i + '">';
-    html += '<td>';
-    html += '<button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove(' + "'" + element + i + "'" + ');">';
-    html += '<span class="fa fa-minus"></span></button>';
-    html += '</td>';
-//precio_lista_x_prod_x_dist
-    html += '<td>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect" onclick="return _buscar_producto(' + i + ');"><i class="fa fa-search"></i></span>';
-    html += '<input type="number"  class="form-control input-sm text-center border border-secondary font_inside_input"  placeholder="Cod." name="prod_cod_' + form + '[]" id="prod_cod_' + i + '" onblur="precio_lista_x_prod_x_dist('+ i +');_buscar_producto('+ i +');" onchange="precio_lista_x_prod_x_dist('+ i +');">';
-    html += '</div>';
-    html += '<div style="border:1px solid black;color:black;">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Producto</span>';
-    //html += '<input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Producto" id="prod_desc_' + i + '" name="prod_desc_' + form + '[]">';
-    html += '<label class="label_input_producto" id="prod_desc_' + i + '" name="prod_desc_' + form + '[]">-</label>';
-    html += '</div>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-dark inp-g-ad_alter">Cant.</span>';
-    html += '<input type="number" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant." id="cant_' + i + '" name="prod_cant_' + form + '[]" onchange="precio_lista_x_prod_x_dist(' + i + ');"  onblur="precio_lista_x_prod_x_dist(' + i + ');" onkeypress="return max_length(this.value, 4);">';
-    html += '</div>';
-    html += '</td>';
-
-    html += '<td>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>list.</span>';
-    html += '<input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_' + i + '" name="prec_list_' + form + '[]">';
-    html += '</div>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Desc.<br>%</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_' + i + '" name="porc_desc_' + form + '[]">';
-    html += '</div>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_' + i + '" name="prec_unidad_' + form + '[]">';
-    html += '</div>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_' + i + '" name="prec_uni_igv_' + form + '[]">';
-    html += '</div>';
-    html += '</td>';
-
-    html += '<td>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_' + i + '" name="monto_desc_' + form + '[]">';
-    html += '</div>';
-    html += '<div class="input-group">';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Valor<br>Neto</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_' + i + '" name="valor_neto_' + form + '[]">';
-    html += '</div>';
-    html += '<div>';
-    html += '<span class="input-group-addon input-sm bg-inverse text-white font-weight-bold border border-secondary inp-g-ad_alter">Monto</span>';
-    html += '<input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_' + i + '" name="monto_line_total_' + form + '[]">';
-    html += '</div>';
-    html += '</td>';
-    html += '</tr>';
-    
-    html += '<tr>';
-    html += '<td>..</td>';
-    html += '<td colspan="3">';
-    html += '<input type="text" class="form-control" placeholder="observaciones" name="" id="">';
-    html += '</td>';
-    html += '</tr>';
-
-    i++;
-    $("#parent-div_" + form).prepend( html + html2);
 }
 function close_modal_await()
 {
@@ -447,7 +374,7 @@ function _buscar_producto(target)
                     }
                     $("#prod_cod_" + target).val(datos[0]);
 
-                    $("#prod_desc_" + target).val(datos[1]).css('font-size', '0.65em');
+                    $("#prod_desc_" + target).val(datos[1]);
 
                     precio_lista_x_prod_x_dist(target);
 
@@ -601,10 +528,8 @@ function sum_all_table()
 
 function _insertar_pedido()
 {
-    var controller = "../"+ __AJAX__ + "pedidos-_insertar_pedido",
-        connect, postData;
+    var controller = "../"+ __AJAX__ + "pedidos-_insertar_pedido", postData = new FormData();
 
-    var status = $("#lbl_status").text();
     var fecha = $("#fecha").val();
     var condicion_pago = $("#condicion_pago").val();
     var distribuidora = $("#distribuidora").val();
@@ -612,13 +537,17 @@ function _insertar_pedido()
     var cliente_name = $("#cliente_name").val();
     var cod_vend = $("#cod_vend").val();
     var name_vend = $("#name_vend").val();
-    //var name_vend = $("#name_vend").val();
-    var post_unique = "fecha=" + fecha + "&cond_pago=" + condicion_pago + "&distribuidora=" + distribuidora +
-        "&ruc=" + cliente_ruc + "&cli_name=" + cliente_name + "&cod_vend=" + cod_vend+ "&name_vend=" + name_vend;
+    var notas = $("#notas").val();
+    var especial = 0;
+
+    if ($('#checkbox1').is(":checked"))
+    {
+        especial = 1;
+    }
     
-        //insert Array productos[]
+    //insert Array productos[]
     var prod_cod = $("input[name='prod_cod_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
-    var prod_desc = $("label[name='prod_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var prod_desc = $("textarea[name='prod_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var prod_cant = $("input[name='prod_cant_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var prec_list = $("input[name='prec_list_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var porc_dscu = $("input[name='porc_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
@@ -627,25 +556,50 @@ function _insertar_pedido()
     var monto_desc = $("input[name='monto_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var valor_neto = $("input[name='valor_neto_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var monto_line_total = $("input[name='monto_line_total_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
-    var observaciones = $("input[name='obs_line_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
+    var observaciones = $("input[name='obs_line_insertar[]']").map(function() { return $(this).val(); }).get().join("||");  
 
-    var post_productos = "&prod_cod=" + prod_cod + "&prod_desc=" + prod_desc + "&prod_cant=" + prod_cant +
-        "&prec_list=" + prec_list + "&porc_dscu=" + porc_dscu + "&prec_uni=" + prec_uni + "&prec_uni_igv=" + prec_uni_igv +
-        "&monto_desc=" + monto_desc + "&valor_neto=" + valor_neto + "&monto_line_total=" + monto_line_total + "&observaciones=" + observaciones;
+    postData.append("fecha", fecha)
+    postData.append("cond_pago", condicion_pago)
+    postData.append("distribuidora", distribuidora)
+    postData.append("ruc", cliente_ruc)
+    postData.append("cli_name", cliente_name)
+    postData.append("cod_vend", cod_vend)
+    postData.append("name_vend", name_vend)
+    postData.append("prod_cod", prod_cod)
+    postData.append("prod_desc", prod_desc)
+    postData.append("prod_cant", prod_cant)
+    postData.append("prec_list", prec_list)
+    postData.append("porc_dscu", porc_dscu)
+    postData.append("prec_uni", prec_uni)
+    postData.append("prec_uni_igv", prec_uni_igv)
+    postData.append("monto_desc", monto_desc)
+    postData.append("valor_neto", valor_neto)
+    postData.append("monto_line_total", monto_line_total)
+    postData.append("observaciones", observaciones)
+    postData.append("notas", notas);
+    postData.append("especial", especial);
 
-    postData = post_unique + post_productos + "&estado=" + status;
-    //console.log(postData);
-    connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    connect.onreadystatechange = function() {
-        if (connect.readyState == 4 && connect.status == 200)
+    $.ajax({
+        url: controller,
+        type: 'POST',
+        data: postData,
+        async: true,
+        cache: false,
+        contentType: false,
+        enctype: 'application/x-www-form-urlencoded',
+        processData: false,
+        beforeSend: function()
+        {
+            $("#loader").html(loader());
+        },
+        complete: function()
         {
             $("#loader").empty();
-
-            //console.log(connect.responseText);
-            if (parseInt(connect.responseText) == 1)
+        },
+        success: function(response)
+        {
+            if (parseInt(response) == 1)
             {
-                //swal("Correcto", "Registrado correctamente", "success");
-                //incluir atras
                 swal({
                     title: 'Correcto',
                     text: "Registrado correctamente",
@@ -662,17 +616,10 @@ function _insertar_pedido()
                     history.back(1);
                 }, function(dismiss){});
             } else{
-                swal("Error", connect.responseText, "error");
+                swal("Error", response, "error");
             }
-        } else if (connect.readyState != 4)
-        {
-            $("#loader").html(loader());
         }
-    }
-    connect.open('POST', controller, true);
-    connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    connect.send(postData);
-
+    });
 }
 function _listar_pedidos()
 {
@@ -758,8 +705,7 @@ function _listar_pedidos()
     connect.send(postData);
 }
 function _buscar_pedido(id)
-{   
-    var lbl = $("#lbl_id").text(id);
+{
     var controller = "../" + __AJAX__ + "pedidos-_buscar_pedido", connect, postData;
 
     postData = "id=" + id;
@@ -772,10 +718,10 @@ function _buscar_pedido(id)
             $("#loader").empty();
 
             var result = connect.responseText;
- 
             if(parseInt(result) == 404)
             {
-                __atras__();
+                //__atras__();
+                self.location = "../Pedidos/";
             }else
             {
                 $("#core-row").html(result);
@@ -792,10 +738,8 @@ function _buscar_pedido(id)
 }
 function _actualizar_pedido(id)
 {
-    var controller = "../"+ __AJAX__ + "pedidos-_actualizar_pedido",
-        connect, postData;
+    var controller = "../"+ __AJAX__ + "pedidos-_actualizar_pedido", postData = new FormData();
 
-    var status = $("#lbl_status").text();
     var fecha = $("#fecha").val();
     var condicion_pago = $("#condicion_pago").val();
     var distribuidora = $("#distribuidora").val();
@@ -803,13 +747,17 @@ function _actualizar_pedido(id)
     var cliente_name = $("#cliente_name").val();
     var cod_vend = $("#cod_vend").val();
     var name_vend = $("#name_vend").val();
-    //var name_vend = $("#name_vend").val();
-    var post_unique = "id="+ id + "&fecha=" + fecha + "&cond_pago=" + condicion_pago + "&distribuidora=" + distribuidora +
-        "&ruc=" + cliente_ruc + "&cli_name=" + cliente_name + "&cod_vend=" + cod_vend+ "&name_vend=" + name_vend;
+    var notas = $("#notas").val();
+    var especial = 0;
+
+    if ($('#checkbox1').is(":checked"))
+    {
+        especial = 1;
+    }
     
-        //insert Array productos[]
+    //insert Array productos[]
     var prod_cod = $("input[name='prod_cod_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
-    var prod_desc = $("label[name='prod_desc_insertar[]']").map(function() { return $(this).text(); }).get().join("||");
+    var prod_desc = $("textarea[name='prod_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var prod_cant = $("input[name='prod_cant_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var prec_list = $("input[name='prec_list_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var porc_dscu = $("input[name='porc_desc_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
@@ -820,18 +768,49 @@ function _actualizar_pedido(id)
     var monto_line_total = $("input[name='monto_line_total_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
     var observaciones = $("input[name='obs_line_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
 
-    var post_productos = "&prod_cod=" + prod_cod + "&prod_desc=" + prod_desc + "&prod_cant=" + prod_cant +
-        "&prec_list=" + prec_list + "&porc_dscu=" + porc_dscu + "&prec_uni=" + prec_uni + "&prec_uni_igv=" + prec_uni_igv +
-        "&monto_desc=" + monto_desc + "&valor_neto=" + valor_neto + "&monto_line_total=" + monto_line_total + "&observaciones=" + observaciones;
+    postData.append("id", id)
+    postData.append("fecha", fecha)
+    postData.append("cond_pago", condicion_pago)
+    postData.append("distribuidora", distribuidora)
+    postData.append("ruc", cliente_ruc)
+    postData.append("cli_name", cliente_name)
+    postData.append("cod_vend", cod_vend)
+    postData.append("name_vend", name_vend)
+    postData.append("prod_cod", prod_cod)
+    postData.append("prod_desc", prod_desc)
+    postData.append("prod_cant", prod_cant)
+    postData.append("prec_list", prec_list)
+    postData.append("porc_dscu", porc_dscu)
+    postData.append("prec_uni", prec_uni)
+    postData.append("prec_uni_igv", prec_uni_igv)
+    postData.append("monto_desc", monto_desc)
+    postData.append("valor_neto", valor_neto)
+    postData.append("monto_line_total", monto_line_total)
+    postData.append("observaciones", observaciones)
+    postData.append("notas", notas);
+    postData.append("especial", especial);
 
-    postData = post_unique + post_productos + "&estado=" + status;
-    //console.log(postData);
-    connect = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    connect.onreadystatechange = function() {
-        if (connect.readyState == 4 && connect.status == 200)
+
+    $.ajax({
+        url: controller,
+        type: 'POST',
+        data: postData,
+        async: true,
+        cache: false,
+        contentType: false,
+        enctype: 'application/x-www-form-urlencoded',
+        processData: false,
+        beforeSend: function()
+        {
+            $("#loader").html(loader());
+        },
+        complete: function()
         {
             $("#loader").empty();
-            if (parseInt(connect.responseText) == 1)
+        },
+        success: function(response)
+        {
+            if (parseInt(response) == 1)
             {
                 swal({
                     title: 'Correcto',
@@ -847,19 +826,12 @@ function _actualizar_pedido(id)
                 }).then(function()
                 {
                     history.back(1);
-                }, function(dismiss) {
-                   });
+                }, function(dismiss) {});
             } else{
-                swal("Error", connect.responseText, "error");
+                swal("Error", response, "error");
             }
-        } else if (connect.readyState != 4)
-        {
-            $("#loader").html(loader());
         }
-    }
-    connect.open('POST', controller, true);
-    connect.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    connect.send(postData);
+    });
 }
 function _eliminar_pedido(id)
 {

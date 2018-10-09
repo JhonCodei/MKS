@@ -5,19 +5,19 @@
 // // // fecha actual
 //  $fecha_final= date("Y-m-d");
  //2
-//ss
- $fecha_inicial=  date("Y-m-d");
-// // fecha actual
- $fecha_final= "2018-10-02";
+// //ss
+//  $fecha_inicial=  date("Y-m-d");
+// // // fecha actual
+//  $fecha_final= "2018-10-02";
 
-function dias_pasados($fecha_inicial, $fecha_final)
-{
-    $dias = (strtotime($fecha_inicial)-strtotime($fecha_final))/86400;
-    $dias = abs($dias);
-    $dias = floor($dias);
-    return $dias;
-}
-print dias_pasados($fecha_inicial, $fecha_final);
+// function dias_pasados($fecha_inicial, $fecha_final)
+// {
+//     $dias = (strtotime($fecha_inicial)-strtotime($fecha_final))/86400;
+//     $dias = abs($dias);
+//     $dias = floor($dias);
+//     return $dias;
+// }
+// print dias_pasados($fecha_inicial, $fecha_final);
 
 
  
@@ -33,3 +33,8 @@ print dias_pasados($fecha_inicial, $fecha_final);
 // // fecha actual
 // $fecha_final= date("Y-m-d");
 // print dias_pasados($fecha_inicial,$fecha_final);
+
+$data = "CEFTREX 1GM & 35MG FRASCO + AMPOLLA";
+
+print strip_tags($data);
+

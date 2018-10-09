@@ -94,6 +94,11 @@ Class PedidosController
             return TRUE;
         }
     }
+    public function search_repre_exist_lima($vendedor)
+    {
+        $Class = new PedidosModel();
+        return $Class->search_repre_exist_lima($vendedor);
+    }
     public function __get_status($id)
     {
         $Class = new PedidosModel();
@@ -110,7 +115,7 @@ Class PedidosController
     public function _insertar_pedido()
     {
         $representantes_libres = array(756);
-
+        
         $user_session = info_usuario('codigo');
         $estado_1_vacio = false;
 
@@ -126,6 +131,7 @@ Class PedidosController
         $array_prec_uni_igv = array();
         $array_monto_desc = array();
         $array_valor_neto = array();
+        $array_observaciones = array();
         $array_monto_line_total = array();
         
         $fecha = formatfecha($_POST['fecha']);
@@ -134,7 +140,8 @@ Class PedidosController
         $cliente = $_POST['ruc'];
         $cli_name = $_POST['cli_name'];
         $vendedor = $_POST['cod_vend'];
-        #$name_vend = $_POST['name_vend'];
+        $notas = $_POST['notas'];
+        $especial = $_POST['especial'];
 
         $vendedor_registro = $user_session;
 
@@ -148,8 +155,9 @@ Class PedidosController
         $monto_desc_get = $_POST['monto_desc'];
         $valor_neto_get = $_POST['valor_neto'];
         $monto_line_total_get = $_POST['monto_line_total'];
+        $observaciones_get = $_POST['observaciones'];
 
-        $estado_ = $_POST['estado'];
+        #$estado_ = $_POST['estado'];
 
         if(strpos($prod_cod_get, '||') !== FALSE)
         {
@@ -163,6 +171,7 @@ Class PedidosController
             $monto_desc = explode("||", $monto_desc_get);
             $valor_neto = explode("||", $valor_neto_get);
             $monto_line_total = explode("||", $monto_line_total_get);
+            $observaciones = explode("||", $observaciones_get);
         }else
         {
             $prod_cod[] = $prod_cod_get;
@@ -175,6 +184,7 @@ Class PedidosController
             $monto_desc[] = $monto_desc_get;
             $valor_neto[] = $valor_neto_get;
             $monto_line_total[] = $monto_line_total_get;
+            $observaciones[] = $observaciones_get;
         }
 
         $count  = count($prod_cod);
@@ -197,6 +207,7 @@ Class PedidosController
                         $array_monto_desc[] = $monto_desc[$c];
                         $array_valor_neto[] = $valor_neto[$c];
                         $array_monto_line_total[] = $monto_line_total[$c];
+                        $array_observaciones[] = $observaciones[$c];
                     }else
                     {
                         print 'El precio de lista, no puede ser <b>"0".</b>';
@@ -223,7 +234,7 @@ Class PedidosController
                 return false;
             }else
             {
-                if(search_repre_exist($vendedor) == false)
+                if($this->search_repre_exist_lima($vendedor) == false)
                 {
                     print "El vendedor no existe."; 
                     return false;
@@ -283,8 +294,9 @@ Class PedidosController
                 $pedidos->condicion_pago = $condicion_pago;
                 $pedidos->fecha = $fecha;
                 $pedidos->distribuidora = $distribuidora;
-                $pedidos->estado_ = $estado_;
+                $pedidos->especial = $especial;
                 $pedidos->vendedor = $vendedor;
+                $pedidos->notas = $notas;
                 $pedidos->vendedor_registro = $vendedor_registro;
                 $pedidos->array_prod_cod = $array_prod_cod;
                 $pedidos->array_prod_name = $array_prod_name;
@@ -295,6 +307,7 @@ Class PedidosController
                 $pedidos->array_prec_uni_igv = $array_prec_uni_igv;
                 $pedidos->array_monto_desc = $array_monto_desc;
                 $pedidos->array_valor_neto = $array_valor_neto;
+                $pedidos->array_observaciones = $array_observaciones;
                 $pedidos->array_monto_line_total = $array_monto_line_total;
 
                 print $this->model->_insertar_pedido($pedidos);
@@ -306,8 +319,6 @@ Class PedidosController
         }
 
         /* CONDICIONES */
-
-
 
     }
     public function _buscar_pedido()
@@ -324,7 +335,6 @@ Class PedidosController
     }
     public function _actualizar_pedido()
     {
-        
         $representantes_libres = array(756);
 
         $user_session = info_usuario('codigo');
@@ -343,6 +353,7 @@ Class PedidosController
         $array_monto_desc = array();
         $array_valor_neto = array();
         $array_monto_line_total = array();
+        $array_observaciones = array();
         
         $_id = $_POST['id'];
         $fecha = formatfecha($_POST['fecha']);
@@ -351,7 +362,8 @@ Class PedidosController
         $cliente = $_POST['ruc'];
         $cli_name = $_POST['cli_name'];
         $vendedor = $_POST['cod_vend'];
-        #$name_vend = $_POST['name_vend'];
+        $notas = $_POST['notas'];
+        $especial = $_POST['especial'];
 
         $vendedor_registro = $user_session;
 
@@ -365,6 +377,7 @@ Class PedidosController
         $monto_desc_get = $_POST['monto_desc'];
         $valor_neto_get = $_POST['valor_neto'];
         $monto_line_total_get = $_POST['monto_line_total'];
+        $observaciones_get = $_POST['observaciones'];
 
         if(strpos($prod_cod_get, '||') !== FALSE)
         {
@@ -378,6 +391,7 @@ Class PedidosController
             $monto_desc = explode("||", $monto_desc_get);
             $valor_neto = explode("||", $valor_neto_get);
             $monto_line_total = explode("||", $monto_line_total_get);
+            $observaciones_ = explode("||", $observaciones_get);
         }else
         {
             $prod_cod[] = $prod_cod_get;
@@ -390,6 +404,7 @@ Class PedidosController
             $monto_desc[] = $monto_desc_get;
             $valor_neto[] = $valor_neto_get;
             $monto_line_total[] = $monto_line_total_get;
+            $observaciones_[]= $observaciones_get;
         }
 
         $count  = count($prod_cod);
@@ -412,6 +427,7 @@ Class PedidosController
                         $array_monto_desc[] = $monto_desc[$c];
                         $array_valor_neto[] = $valor_neto[$c];
                         $array_monto_line_total[] = $monto_line_total[$c];
+                        $array_observaciones[] = $observaciones_[$c];
                     }else
                     {
                         print 'El precio de lista, no puede ser <b>"0".</b>';
@@ -440,7 +456,7 @@ Class PedidosController
                 return false;
             }else
             {
-                if(search_repre_exist($vendedor) == false)
+                if($this->search_repre_exist_lima($vendedor) == false)
                 {
                     print "El vendedor no existe."; 
                     return false;
@@ -501,7 +517,8 @@ Class PedidosController
                 $pedidos->condicion_pago = $condicion_pago;
                 $pedidos->fecha = $fecha;
                 $pedidos->distribuidora = $distribuidora;
-                #$pedidos->estado_ = $estado_;
+                $pedidos->notas = $notas;
+                $pedidos->especial = $especial;
                 $pedidos->vendedor = $vendedor;
                 $pedidos->vendedor_registro = $vendedor_registro;
                 $pedidos->array_prod_cod = $array_prod_cod;
@@ -513,6 +530,7 @@ Class PedidosController
                 $pedidos->array_prec_uni_igv = $array_prec_uni_igv;
                 $pedidos->array_monto_desc = $array_monto_desc;
                 $pedidos->array_valor_neto = $array_valor_neto;
+                $pedidos->array_observaciones = $array_observaciones;
                 $pedidos->array_monto_line_total = $array_monto_line_total;
 
                 print $this->model->_actualizar_pedido($pedidos);

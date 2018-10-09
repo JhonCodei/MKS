@@ -1,0 +1,21 @@
+.input-xs{
+ height: 20px;
+ line-height: 1.5;
+ font-size: 12px;
+ padding: 1px 5px;
+ border-radius: 3px;
+}
+
+.jumbotron {
+ background-color: #89a4c7;
+ color: #89a4c7;
+ padding-bottom: 200px;
+}
+.no-border_2
+{
+ border-radius: 0px !important;
+}
+.font_inside_input
+{
+    padding:0.01em !important;
+}
