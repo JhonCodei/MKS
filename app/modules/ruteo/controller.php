@@ -11,6 +11,8 @@ Class RuteoController
         __MODELS__($__file__);
         __SQL__($__file__);
          __FUNCTIONS__($__file__);
+
+         $this->model = new RuteoModel();
     }
     public function render($vista)
     {
@@ -23,6 +25,10 @@ Class RuteoController
         return render_view($vista, $css_js_1, $css_js_2);
     }
     #__functions__
-
+    public function _insertar_ruteo()
+    {
+        print "<pre>";
+        print_r($_POST);
+    }
 
 }

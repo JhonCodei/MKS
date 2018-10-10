@@ -37,7 +37,6 @@ function close_modal_mm_await()
 }
 //var i = 2;
 
-
 function newElement(e, i, element, form)
 {
     var html;

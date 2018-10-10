@@ -302,7 +302,7 @@ function max_length(str, max) {
     if (str.length <= max) {
         return true;
     } else {
-        // return false;
-        swal("error","OE TE PASASDTE","error");
+        return false;
+        //swal("error","OE TE PASASDTE","error");
     }
 }

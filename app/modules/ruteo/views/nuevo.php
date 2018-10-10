@@ -38,7 +38,7 @@
                      </td>
                      <td>
                      <div class="input-group">
-                      <input id="timepicker2" name="xx[]" type="text" class="form-control input-sm text-center border border-secondary">
+                      <input id="timepicker2" name="horas_insertar2[]" type="text" class="form-control input-sm text-center border border-secondary">
                       <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect" onclick="__clear__('cliente_ruc,cliente_name');">
                            <i class="md md-access-time"></i>
                            </span>
