@@ -581,8 +581,8 @@ Class PedidosModel
                 <div class="col-md-4">
                     <div class="input-group">
                         <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Ruc</span>
-                        <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect">
-                            <i class="fa fa-search" onclick="return _buscar_cliente();"></i></span>
+                        <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect"  onclick="return _buscar_cliente();">
+                            <i class="fa fa-search"></i></span>
                         <input type="text" id="cliente_ruc" class="form-control text-center border border-secondary" onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc" value="'.$cliente_ruc.'">
                         <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__('."'cliente_ruc'".','."'cliente_name'".');"><i class="fa fa-trash"></i></span>   
                     </div>
@@ -654,7 +654,7 @@ Class PedidosModel
                     </div>
                 </div>
                 <div class="col-md-8">
-                    <textarea name="" id="notas" class="form-control text-center border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 200);" cols="100" rows="10"></textarea>
+                    <textarea name="" id="notas" class="form-control text-center border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 200);" cols="100" rows="10">'.$notas.'</textarea>
                 </div>
             </div>
                 <div class="col-lg-12">

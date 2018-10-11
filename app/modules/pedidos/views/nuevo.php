@@ -32,8 +32,8 @@
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon bg-primary text-white font-weight-bold border border-primary">Ruc</span>
-                    <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect">
-                        <i class="fa fa-search" onclick="return _buscar_cliente();"></i>
+                    <span class="input-group-addon bg-success text-white font-weight-bold border border-success waves-light waves-effect" onclick="return _buscar_cliente();">
+                        <i class="fa fa-search"></i>
                     </span>
                     <input type="text" id="cliente_ruc" class="form-control text-center border border-secondary" onkeypress="return max_length(this.value, 10);" placeholder="N° Ruc">
                     <span class="input-group-addon bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__('cliente_ruc,cliente_name');">

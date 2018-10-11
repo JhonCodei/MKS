@@ -524,7 +524,6 @@ function sum_all_table()
 /**
  *     __ SUM REAL TIME __
  */
-
 function _insertar_pedido()
 {
     var controller = "../"+ __AJAX__ + "pedidos-_insertar_pedido", postData = new FormData();
@@ -539,10 +538,7 @@ function _insertar_pedido()
     var notas = $("#notas").val();
     var especial = 0;
 
-    if ($('#checkbox1').is(":checked"))
-    {
-        especial = 1;
-    }
+    if ($('#checkbox1').is(":checked")){especial = 1;}
     
     //insert Array productos[]
     var prod_cod = $("input[name='prod_cod_insertar[]']").map(function() { return $(this).val(); }).get().join("||");
