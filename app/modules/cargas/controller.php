@@ -10,7 +10,7 @@ Class CargasController
 
         __MODELS__($__file__);
         __SQL__($__file__);
-         __FUNCTIONS__($__file__);
+        __FUNCTIONS__($__file__);
     }
     public function render($vista)
     {

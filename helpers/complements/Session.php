@@ -121,6 +121,6 @@ function is_admin_session()
         return true;
     }else
     {
-        redirect("Index");
+        redirect("Login");
     }
 }

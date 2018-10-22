@@ -61,6 +61,10 @@ require_once 'helpers/libraries/Email/PHPMailerAutoload.php';
 require_once 'helpers/libraries/ExcelAPI/PHPExcel.php';
 require_once 'helpers/libraries/CSV/parsecsv.lib.php';
 
+//require_once 'helpers/libraries/FPDF/fpdf.php';
+#require_once 'helpers/libraries/FPDF/fpdf_html.php';
+require_once 'helpers/libraries/MPDF/mpdf.php';
+
 require_once 'helpers/complements/func_helpers.php';
 #require_once 'helpers/complements/Mailer.php';
 require_once 'helpers/complements/Encrypt.php';

@@ -47,9 +47,9 @@ Class UsuariosModel
                                             view_tipo AS tipo
                                         FROM
                                             tbl_usuarios
-                                                INNER JOIN
+                                                LEFT JOIN
                                             tbl_view_data ON view_usuario = usuario_usuario
-                                                INNER JOIN
+                                                LEFT JOIN
                                             tbl_usuario_detalle ON u_detalle_usuario = usuario_usuario
                                         GROUP BY 2;");
 

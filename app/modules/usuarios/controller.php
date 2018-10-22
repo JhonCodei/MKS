@@ -5,7 +5,8 @@ Class UsuariosController
     public function __construct()
     {
         is_session_true(); 
-        is_menu_permission();
+        is_menu_permission(); 
+        is_admin_session();   
 
         $__file__ = "usuarios";
 

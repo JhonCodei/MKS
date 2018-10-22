@@ -670,7 +670,7 @@ Class PedidosModel
                       <tr>
                         <th class="text-center text-white" style="width:1% !important;">
                             <div class="pull-left">
-                                <button type="button" onclick="return newElement(event, '.$new_elent.', '."'tr'".', '."'insertar'".');" class="btn btn-sm btn-primary waves-effect waves-light">
+                                <button type="button" onclick="return newElement2(event, '.$new_elent.', '."'tr'".', '."'insertar'".');" class="btn btn-sm btn-primary waves-effect waves-light">
                                     <span class="fa fa-plus"></span>
                                 </button>
                             </div>

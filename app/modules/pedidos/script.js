@@ -1,22 +1,21 @@
 //CODE
 /***  __INIT__  ***/
+
 $(function()// validations
 {
-    //history.pushState(null, null, "Editar");
     var uri = document.URL;
     var edt_p = uri.indexOf("pedidos/editar?p=");
 
     if(edt_p == -1)
     {
-        //console.log(edt_p);
-        var get_ = getQueryVariable("p");
-        //console.log("get p=" + get_);
+        var get_ = getQueryVariable("p");           
         if(get_ != false)
         {
-            _buscar_pedido(get_);       
+            _buscar_pedido(get_);
         }
     }
 });
+
 
 change_event();
 
@@ -32,12 +31,12 @@ jQuery('#fecha, #fecha-consulta').datepicker({
 function close_modal_mm_await()
 {
     setTimeout(function() {
-        location = ''
+        location = '';
     }, 0);
 }
-//var i = 2;
 
-function newElement(e, i, element, form)
+var i = 2;
+function newElement(e, xx, element, form)
 {
     var html;
     html = '<tr id="' + element + i + '">\
@@ -81,7 +80,7 @@ function newElement(e, i, element, form)
     <form class="form-inline">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Desc.<br>%</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_' + i + '" name="porc_desc_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_' + i + '" name="porc_desc_' + form + '[]">\
     </div>\
     </form>\
     </div>\
@@ -89,7 +88,7 @@ function newElement(e, i, element, form)
     <form class="form-inline">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_' + i + '" name="prec_unidad_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_' + i + '" name="prec_unidad_' + form + '[]">\
     </div>\
     </form>\
     </div>\
@@ -97,7 +96,7 @@ function newElement(e, i, element, form)
     <form class="form-inline">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_' + i + '" name="prec_uni_igv_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_' + i + '" name="prec_uni_igv_' + form + '[]">\
     </div>\
     </form>\
     </div>\
@@ -108,7 +107,7 @@ function newElement(e, i, element, form)
     <form class="form-inline">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_' + i + '" name="monto_desc_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_' + i + '" name="monto_desc_' + form + '[]">\
     </div>\
     </form>\
     </div>\
@@ -116,14 +115,14 @@ function newElement(e, i, element, form)
     <form class="form-inline">\
     <div class="input-group">\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Valor<br>Neto</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_' + i + '" name="valor_neto_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_' + i + '" name="valor_neto_' + form + '[]">\
     </div>\
     </form>\
     </div>\
     <div class="col-md-4">\
     <div>\
     <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto</span>\
-    <input type="number" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_' + i + '" name="monto_line_total_' + form + '[]">\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_' + i + '" name="monto_line_total_' + form + '[]">\
     </div>\
     </div>\
     </div>\
@@ -138,6 +137,111 @@ function newElement(e, i, element, form)
     </tr>';
 
     i++;
+    $("#parent-div_" + form).prepend( html );
+}
+
+var d = 9999;
+function newElement2(e, xx, element, form)
+{
+    var html;
+    html = '<tr id="' + element + d + '">\
+    <td>\
+    <button class="btn btn-sm btn-danger waves-effect waves-light"  onclick="elementRemove(' + "'" + element + d + "'" + ');elementRemove(' + "'2" + element + d + "'" + ');">\
+    <span class="fa fa-minus"></span>\
+    </button>\
+    </td>\
+    <td style="width:30% !important;">\
+    <div class="row">\
+    <div class="col-md-4">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-primary text-white font-weight-bold border border-primary waves-light waves-effect" onclick="return _buscar_producto(' + d + ');"><i class="fa fa-search"></i></span>\
+    <input type="text" style="font-size:0.75em !important;" class="form-control input-sm text-center border border-secondary font_inside_input"  placeholder="Cod." name="prod_cod_' + form + '[]" id="prod_cod_' + d + '" onblur="precio_lista_x_prod_x_dist('+ d +');_buscar_producto('+ d +');" onchange="precio_lista_x_prod_x_dist('+ d +');">\
+    </div>\
+    </div>\
+    <div class="col-md-4">\
+    <div>\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-dark inp-g-ad_alter">Producto</span>\
+    <textarea readonly="true" style="width: 100%;height:35px;font-size:0.7em !important;resize:none;" class="font_inside_input input-sm" id="prod_desc_' + d + '" name="prod_desc_' + form + '[]"></textarea>\
+    </div>\
+    </div>\
+    <div class="col-md-4" >\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-dark inp-g-ad_alter">Cant.</span>\
+    <input type="text" class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cant." id="cant_' + d + '" name="prod_cant_' + form + '[]" onchange="precio_lista_x_prod_x_dist(' + d + ');"  onblur="precio_lista_x_prod_x_dist(' + d + ');" onkeypress="return max_length(this.value, 4);">\
+    </div>\
+    </div>\
+    </div></td>\
+    <td style="width:30% !important;">\
+    <div class="row">\
+    <div class="col-md-3">\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Prec.<br>list.</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_list_' + d + '" name="prec_list_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    <div class="col-md-3">\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Desc.<br>%</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="porc_desc_' + d + '" name="porc_desc_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    <div class="col-md-3" >\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Prec.<br>Uni.</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_unidad_' + d + '" name="prec_unidad_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    <div class="col-md-3">\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">P.U.<br>+IGV</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="prec_uni_igv_' + d + '" name="prec_uni_igv_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    </div></td>\
+    <td style="width:30% !important;">\
+    <div class="row">\
+    <div class="col-md-4">\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto<br>Desc.</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_desc_' + d + '" name="monto_desc_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    <div class="col-md-4">\
+    <form class="form-inline">\
+    <div class="input-group">\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Valor<br>Neto</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="valor_neto_' + d + '" name="valor_neto_' + form + '[]">\
+    </div>\
+    </form>\
+    </div>\
+    <div class="col-md-4">\
+    <div>\
+    <span class="input-group-addon input-sm bg-inverse text-white border border-secondary inp-g-ad_alter">Monto</span>\
+    <input type="text" readonly="true" class="form-control input-sm text-center border border-secondary font_inside_input" id="monto_line_total_' + d + '" name="monto_line_total_' + form + '[]">\
+    </div>\
+    </div>\
+    </div>\
+    </td>\
+    </tr>\
+    <tr id="2' + element + d + '">\
+    <td>\
+    </td>\
+    <td colspan="3">\
+    <input type="text" class="form-control border border-secondary" placeholder="observaciones" onkeypress="return max_length(this.value, 130);" id="obs_line_' + d + '" name="obs_line_' + form + '[]">\
+    </td>\
+    </tr>';
+
+    d++;
     $("#parent-div_" + form).prepend( html );
 }
 function close_modal_await()
@@ -259,7 +363,7 @@ function _buscar_cliente()
                 //     }, 200);
                 // });
            }
-        } else if (connect.readyState != 4) {
+        } else if (connect.readyState != 4){
             $("#loader").html(loader());
         }
     }
@@ -721,6 +825,7 @@ function _buscar_pedido(id)
             {
                 $("#core-row").html(result);
                 sum_all_table();
+                
             }
         }else if (connect.readyState != 4)
         {

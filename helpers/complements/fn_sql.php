@@ -2068,7 +2068,7 @@ function medico_visitado_x_categoria($user_session, $cmp, $categoria, $year, $mo
                     YEAR(medpro_fecha) = :year
                         AND MONTH(medpro_fecha) = :month
                         AND medpro_vendedor = :user_session
-                        AND medpro_medico_categoria = :categoria
+                        -- AND medpro_medico_categoria = :categoria
                         AND medpro_medico_cmp = :cmp;";
 
     $execQuery = Database::Connection()->prepare($Query1);

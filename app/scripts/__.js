@@ -10,6 +10,7 @@
  * 
  */
 var __AJAX__ = "ajax.php?request=";
+var __POST__ = 'application/x-www-form-urlencoded';
 
 function validateNumber(event) {
     var key = window.event ? event.keyCode : event.which;
@@ -228,6 +229,43 @@ function loader() {
     // html = '<div class="page_load container_load"><div class="lds-ripple "><div></div><div></div></div></div>';
     // return html;
 }
+function _validate_feriados(fecha)
+{
+    // var dateString = _fechaview_to_fechadb(fecha);
+    // var days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+    // var d = new Date(dateString);
+    // var dayName = days[d.getDay()];
+    // console.log(dayName);
+    // var dt = new Date(dateString);
+    
+    // var local = new Date(dateString);
+    // swal('', local.format('W'),'info');
+}
+function _fechaview_to_fechadb(fecha)
+{
+    var split_fecha = fecha.split('/');
+    var year = split_fecha[2];
+    var month = split_fecha[1];
+    var day = split_fecha[0];
+
+    if (day < 10) {
+        day = '0' + day;
+    }
+
+    if (month < 10) {
+        month = '0' + month;
+    }
+
+    var new_fecha = year + '-' + month + '-' + day;
+
+    return new_fecha;
+}
+function div_loader()
+{
+    var html = null;
+    html = "<label><span class='fa fa-spin fa-circle-o-notch'></span>&nbsp;Procesando...</label>";
+    return html;
+}
 
 function close_() {
     $(".alert").css("display", "none");
@@ -244,6 +282,19 @@ function error_($msg) {
 
 function printDiv(divName) {
     var printContents = document.getElementById(divName).innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+
+    window.print();
+
+    document.body.innerHTML = originalContents;
+    $("table thead").css('background-color', "blue").css('color', 'white');
+
+    setInterval(function() { location.reload(); }, 1500);
+}
+function print_id_content(id_contend) {
+    var printContents = document.getElementById(id_contend).innerHTML;
     var originalContents = document.body.innerHTML;
 
     document.body.innerHTML = printContents;
@@ -295,14 +346,38 @@ function validate_length(str, max, min) {
         return false;
     }
 }
-
-function max_length(str, max) {
+function _input_search_color()
+{
+    $("input[type='search']").addClass("border border-secondary");
+}
+function max_length(str, max)
+{
     //event onkeypress 
-
-    if (str.length <= max) {
+    if(str.length <= max)
+    {
         return true;
-    } else {
+    }else
+    {
         return false;
-        //swal("error","OE TE PASASDTE","error");
     }
+}
+function checkbox_dependiente(master, parents)
+{
+    $(  master  ).click(function ()
+    {
+        $(  parents   ).prop('checked', $(this).prop('checked'));
+    });
+
+    $(  parents  ).change(function()
+    {
+        var a = $(  parents   );
+        
+        if(a.length == a.filter(":checked").length)
+        {
+            $(  master   ).prop( "checked", true );
+        }else
+        {
+            $(  master   ).prop( "checked", false );
+        }
+    });
 }
