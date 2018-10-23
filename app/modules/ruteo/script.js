@@ -1,11 +1,5 @@
 //CODE
 
-// $("#master_check").click(function () {
-//    alert(1); 
-// });
-
-
-
 $('[id^=cliente_ruc]').keypress(validateNumber);
 jQuery('#fecha-consulta').datepicker({orientation: 'auto top', toggleActive: true, autoclose: true, format: "dd/mm/yyyy", todayHighlight: true});
 var content_div = $("#_div-container_");
@@ -102,7 +96,7 @@ function __call_new_form()
     </td>\
     <td>\
     <div class="input-group">\
-    <input id="codigo_1" name="codigos_insertar[]" style="width:20% !important;" pattern="[0-9.]+" type="number" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
+    <input id="codigo_1" name="codigos_insertar[]" style="width:20% !important;" pattern="[0-9.]+" onblur="_blur_buscar_clientes_medicos(1);" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
     <input id="cliente_1" name="clientes_insertar[]" style="width:30% !important;" type="text" readonly="true"  class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cliente">\
     <span class="input-group-addon input-sm bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__(' + "'codigo_1,cliente_1'" + ');">\
     <i class="fa fa-trash"></i>\
@@ -184,7 +178,7 @@ function newElement(e, xx, element, form)
     </td>\
     <td>\
     <div class="input-group">\
-    <input id="codigo_'+ i +'" name="codigos_insertar[]" style="width:20% !important;" pattern="[0-9.]+" type="number" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
+    <input id="codigo_'+ i +'" name="codigos_insertar[]" onblur="_blur_buscar_clientes_medicos('+ i +');" style="width:20% !important;" pattern="[0-9.]+" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
     <input id="cliente_'+ i +'" name="clientes_insertar[]" style="width:30% !important;" type="text" readonly="true"  class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cliente">\
     <span class="input-group-addon input-sm bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__(' + "'codigo_" + i + ",cliente_" + i + "'" + ');">\
     <i class="fa fa-trash"></i>\
@@ -267,7 +261,7 @@ function newElement2(e, xx, element, form)
     </td>\
     <td>\
     <div class="input-group">\
-    <input id="codigo_' + d + '" name="codigos_insertar[]" style="width:20% !important;" pattern="[0-9.]+" type="number" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
+    <input id="codigo_' + d + '" name="codigos_insertar[]" onblur="_blur_buscar_clientes_medicos('+ i +');" style="width:20% !important;" pattern="[0-9.]+" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
     <input id="cliente_' + d + '" name="clientes_insertar[]" style="width:30% !important;" type="text" readonly="true"  class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cliente">\
     <span class="input-group-addon input-sm bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__(' + "'codigo_" + d + ",cliente_" + d + "'" + ');">\
     <i class="fa fa-trash"></i>\
@@ -352,9 +346,11 @@ function _buscar_cliente(element_id)
     
     var codigo = element_id;//$("#codigo_" + ).val();
     var fecha = $("#fecha-consulta").val();
+    var _in = $("#codigo_" + element_id).val();
 
     postData.append("codigo", codigo);
     postData.append("fecha", fecha);
+    postData.append("_in", _in);
     
     $.ajax({
         url: controller,
@@ -399,7 +395,7 @@ function _buscar_cliente(element_id)
                         }
                     },
                     pagingType: "simple",
-                    //order: [ [ 3,  'desc' ] ]
+                    order: [ [ 3,  'desc' ] ]
                 });
                 $("#table_listado_clientes_filter").addClass("pull-left").css("color", "black");
                 _input_search_color();
@@ -415,9 +411,11 @@ function _buscar_medico(element_id)
 
     var codigo = element_id;
     var fecha = $("#fecha-consulta").val();
+    var _in = $("#codigo_" + element_id).val();
 
     postData.append("codigo", codigo);
     postData.append("fecha", fecha);
+    postData.append("_in", _in);
 
     $.ajax({
         url: controller,
@@ -472,10 +470,38 @@ function _buscar_medico(element_id)
         }
     });
 }
+function _blur_buscar_clientes_medicos(element_id)
+{
+    //var controller = __AJAX__ + "ruteo-_blur_buscar_clientes_medicos", postData = new FormData();  
+    //console.log(Number.isInteger(codigo));
+    var codigo = $("#codigo_" + element_id).val();
+    
+    if(codigo.length == 0)
+    {
+        return false;
+    }else
+    {
+        if (isNumeric(codigo))
+        {
+            if(codigo > 10000000001)
+            {
+                _buscar_cliente(element_id);
+            }else
+            {
+                _buscar_medico(element_id);
+            }
+        }else
+        {
+            _buscar_cliente(element_id);
+        }
+    }
+}
 function _buscar_modal(element_id)
 {
     var controller = __AJAX__ + "ruteo-_buscar_modal", postData = new FormData();
 
+    $("#codigo_" + element_id).val('');
+    $("#cliente_" + element_id).val('');
     postData.append("element_id", element_id);
 
     $.ajax({
@@ -493,6 +519,8 @@ function _buscar_modal(element_id)
         {
             $("#contenido_modal1").html(response);
             $("#modal-events-mm").modal('show');
+            $("#codigo_" + element_id).val('');
+            $("#cliente_" + element_id).val('');
         }
     });
 
@@ -512,6 +540,7 @@ function _insertar_ruteo()
     var observaciones = $("textarea[name='observaciones_insertar[]']").map(function() { return $(this).val(); }).get().join("||")
     var tipos = $("select[name='tipos_insertar[]'] option:selected").map(function() { return $(this).val(); }).get().join("||")
 
+    console.log(codigos);
     postData.append("fecha", fecha)
     postData.append("horas", horas)
     postData.append("codigos", codigos)
@@ -767,6 +796,7 @@ function _listar_ruteo_pagos()
                     action: function ( e, dt, node, config )
                     {
                         var _codigos_ = $("input[name='codigos[]']:checked").map(function() { return $(this).val(); }).get().join("||")
+                        var _correlativos_ = $("input[name='correlativos[]']").map(function() { return $(this).val(); }).get().join("||")
 
                         swal({
                             title: 'Correcto',
@@ -786,7 +816,7 @@ function _listar_ruteo_pagos()
                                 swal("Advertencia", "Seleccione almenos un casillero", "info")
                                 return false
                             }
-                            _print_ruteos(_codigos_);
+                            _print_ruteos(_codigos_, _correlativos_);
                         }, function(dismiss){})
                     }
                 }
@@ -818,13 +848,14 @@ function _listar_ruteo_pagos()
         }
     });
 }
-function _print_ruteos(codigos)
+function _print_ruteos(codigos, correlativos)
 {
     var controller = __AJAX__ + "ruteo-_print_ruteos", postData = new FormData();
 
     var data = $("#array-data").val();
 
     postData.append("codigos", codigos);
+    postData.append("correlativos", correlativos);
     postData.append("data", data);
 
     $.ajax({
@@ -860,7 +891,7 @@ function _print_ruteos(codigos)
             } 
             var linkelem = document.createElement('a');
 
-            try 
+            try
             {
                 var blob = new Blob([response], { type: 'application/octet-stream' });                        
 
@@ -903,7 +934,7 @@ function _print_ruteos(codigos)
     
 
 }
-function _print_ruteost(codigos)
+function _print_test(codigos)
 {
     var controller = __AJAX__ + "ruteo-_print_ruteos", postData = new FormData();
 
@@ -932,7 +963,8 @@ function _print_ruteost(codigos)
         },
         success: function(response)
         {            
-             content_div.html(response);
+            //content_div.html(response);
+            this.print();
         }
     });
     

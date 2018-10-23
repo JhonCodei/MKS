@@ -1,0 +1,18 @@
+table.table-bordered
+        {
+            border:1.5px solid black !important;
+            margin-top:20px;
+        }
+        table.table-bordered > thead > tr > th
+        {
+            border:1.5px solid black !important;
+								}
+								table.table-bordered > tbody 
+        {
+            border:1.5px solid black !important;
+        }
+        table.table-bordered > tbody > tr > td
+        {
+            border:1.5px solid black !important;
+								} 
+

@@ -28,7 +28,7 @@ function _sql_eliminar_ruteo_()
     $sql = "DELETE FROM ruteo WHERE vendedor = :vendedor AND fecha = :fecha";
     return $sql;
 }
-function _sql_buscar_medicos($user_session)
+function _sql_buscar_medicos($user_session, $in = 0)
 {
     $cmp = NULL;
     $goSQL = NULL;
@@ -37,99 +37,108 @@ function _sql_buscar_medicos($user_session)
     $WHERE = NULL;
     $WHERE1 = NULL;
 
-    switch ($user_session)
-    {
-        case '520':
-            $sup = true;
-            break;
-        case '417':
-            $sup = true;
-            break;
-        case '391':
-            $sup = true;
-            break;
-        case '629':
-            $sup = true;
-            break;
-        case '757':
-            $sup = true;
-            break;
-        case '650':
-            $sup = true;
-            break;
-        default:
-            $sup = false;
-            break;
-    }
-
-    if($sup == true)
+    if(strlen($in) != 0)
     {
         $goSQL = "SELECT 
-                        medico_cmp AS cmp,
-                        medico_correlativo AS correlativo,
-                        medico_nombre AS nombre,
-                        medico_categoria AS categoria
-                    FROM
-                        tbl_maestro_medicos
-                    WHERE
-                        medico_especialidad != ''
-                            AND medico_categoria != ''
-                            AND medico_supervisor = :user_session
-                            AND medico_representante IS NOT NULL;";
-
+                            medico_cmp AS cmp,
+                            medico_correlativo AS correlativo,
+                            medico_nombre AS nombre,
+                            medico_categoria AS categoria
+                        FROM
+                            tbl_maestro_medicos
+                        WHERE
+                            medico_cmp = :cmp LIMIT 0,1";
     }else
     {
-        // if(strlen($cmp) != 0)
-        // {
-        //     $WHERE = " AND medico_cmp = '$cmp' AND medico_correlativo = '$correlativo' ";
-        //     $WHERE1 = " AND medico_cmp = '$cmp' ";
-        // }
-    
-        $SQL_MED1 = "SELECT 
-                        medico_cmp AS cmp,
-                        medico_correlativo AS correlativo,
-                        medico_nombre AS nombre,
-                        medico_categoria AS categoria
-                    FROM
-                        tbl_maestro_medicos
-                    WHERE
-                        medico_especialidad != ''
-                            AND medico_categoria != ''
-                            AND medico_zona = (SELECT 
-                                representante_zonag
-                            FROM
-                                tbl_representantes
-                            WHERE
-                                representante_codigo = :user_session)
-                            AND medico_representante = :user_session
-                            $WHERE1";
-        $SQL_MED2 = "SELECT 
-                        medico_cmp AS cmp,
-                        medico_correlativo AS correlativo,
-                        medico_nombre AS nombre,
-                        medico_categoria AS categoria
-                    FROM
-                        tbl_maestro_medicos
-                    WHERE
-                        medico_especialidad != ''
-                            AND medico_categoria != ''
-                            AND medico_zona = (SELECT 
-                                representante_zonag
-                            FROM
-                                tbl_representantes
-                            WHERE
-                                representante_codigo = :user_session)
-                        $WHERE 
-                            AND medico_representante IS NULL;";
-
-        if($user_existe_medico == 1)
+        switch ($user_session)
         {
-            $goSQL = $SQL_MED1;
-        }else
-        {
-            $goSQL = $SQL_MED2;
+            case '520':
+                $sup = true;
+                break;
+            case '417':
+                $sup = true;
+                break;
+            case '391':
+                $sup = true;
+                break;
+            case '629':
+                $sup = true;
+                break;
+            case '757':
+                $sup = true;
+                break;
+            case '650':
+                $sup = true;
+                break;
+            default:
+                $sup = false;
+                break;
         }
-    }  
+    
+        if($sup == true)
+        {
+            $goSQL = "SELECT 
+                            medico_cmp AS cmp,
+                            medico_correlativo AS correlativo,
+                            medico_nombre AS nombre,
+                            medico_categoria AS categoria
+                        FROM
+                            tbl_maestro_medicos
+                        WHERE
+                            medico_especialidad != ''
+                                AND medico_categoria != ''
+                                AND medico_supervisor = :user_session
+                                AND medico_representante IS NOT NULL;";
+    
+        }else
+        {        
+            $SQL_MED1 = "SELECT 
+                            medico_cmp AS cmp,
+                            medico_correlativo AS correlativo,
+                            medico_nombre AS nombre,
+                            medico_categoria AS categoria
+                        FROM
+                            tbl_maestro_medicos
+                        WHERE
+                            medico_especialidad != ''
+                                AND medico_categoria != ''
+                                AND medico_zona = (SELECT 
+                                    representante_zonag
+                                FROM
+                                    tbl_representantes
+                                WHERE
+                                    representante_codigo = :user_session)
+                                AND medico_representante = :user_session
+                                $WHERE1";
+            $SQL_MED2 = "SELECT 
+                            medico_cmp AS cmp,
+                            medico_correlativo AS correlativo,
+                            medico_nombre AS nombre,
+                            medico_categoria AS categoria
+                        FROM
+                            tbl_maestro_medicos
+                        WHERE
+                            medico_especialidad != ''
+                                AND medico_categoria != ''
+                                AND medico_zona = (SELECT 
+                                    representante_zonag
+                                FROM
+                                    tbl_representantes
+                                WHERE
+                                    representante_codigo = :user_session)
+                            $WHERE 
+                                AND medico_representante IS NULL;";
+    
+            if($user_existe_medico == 1)
+            {
+                $goSQL = $SQL_MED1;
+            }else
+            {
+                $goSQL = $SQL_MED2;
+            }
+        }  
+    }
+    
     return $goSQL;
 }
 function _sql_zonas_supervisores()
@@ -157,8 +166,25 @@ function _sql_buscar_zonas()
     $sql = "SELECT codigo, portafolio, region, zona, zona_vista, cargo FROM zona_venta_visita WHERE codigo = :codigo;";
     return $sql;
 }
-function _sql_buscar_clientes()
+function _sql_buscar_clientes($in = 0)
 {
+    $condiciones = NULL;
+
+    if(strlen($in) != 0)
+    {
+        if(is_numeric($in))
+        {
+            $condiciones = " ruc = :in LIMIT 0,1 ";
+        }else
+        {
+            $condiciones = " codigo = :in LIMIT 0,1 ";
+        }
+    }else
+    {
+        $condiciones = " zona IN (:zonas) ";
+    }
+
+
     $sql = "SELECT 
                 codigo,
                 ruc,
@@ -173,9 +199,9 @@ function _sql_buscar_clientes()
             FROM
                 maestro_clientes
             WHERE
-                zona IN (:zonas);";
+                $condiciones";
 
-                return $sql;
+    return $sql;
 }
 function _sql_datos_complementos($codigo, $user_session)
 {
@@ -200,7 +226,8 @@ function _sql_representates_ruteo()
                     LEFT JOIN
                 tbl_representantes ON representante_codigo = vendedor
             WHERE
-                YEAR(fecha) = :year AND MONTH(fecha) = :month;";
+                YEAR(fecha) = :year AND MONTH(fecha) = :month
+                ORDER BY nombre_corto";
 
     return $sql;
 }

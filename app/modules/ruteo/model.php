@@ -6,6 +6,7 @@ Class RuteoModel
     {
         $this->db = Database::Connection();#Connection DB#
         #__SQL__();
+        require_once 'helpers/libraries/MPDF/mpdf.php';
     }
     #__functions__
     public function _ruteo_cerrado_($datetime)
@@ -40,16 +41,37 @@ Class RuteoModel
         $id_codigo = $data->codigo;
         $representante = $data->vendedor;
         $periodo = $data->periodo;
+        $_in = $data->_in;
 
         $output = null;
         $WHERE = null;
         $WHERE1 = null;
 
-        $medicos = $this->db->prepare(_sql_buscar_medicos($representante));
-        $medicos->bindparam(':user_session', $representante);
+        $medicos = $this->db->prepare(_sql_buscar_medicos($representante, $_in));
+        if(strlen($_in) == 0)
+        {
+            $medicos->bindparam(':user_session', $representante);
+        }else
+        {
+            $medicos->bindparam(":cmp", $_in);
+        } 
+        
         if($medicos->execute())
         {
-            if($medicos->rowCount() > 0)
+            if($medicos->rowCount() == 1)
+            {
+                $medicos_r = $medicos->fetch(PDO::FETCH_ASSOC);
+
+                $cmp = $medicos_r['cmp'];
+                $nombre = $medicos_r['nombre'];
+                $correlative = $medicos_r['correlativo'];
+                $categoria = $medicos_r['categoria'];
+                $cmp_corr = $cmp.'*'.$correlative;
+
+                $output = $cmp.'~~'.$nombre;
+                $type = '1';
+
+            }else if($medicos->rowCount() > 0)
             {
                    $output .= '<table id="table_listado_medicos" data-toggle="table" data-page-size="10" data-pagination="true" class="table-condensed table table-hover table-bordered table-sm" style="display: table;font-size:0.9em;">
                                     <thead class="text-white " style="background-color:#588D9C;">
@@ -82,7 +104,7 @@ Class RuteoModel
 
             }else
             {
-                $output = "Sin medicos";#$cmp.'*'.$correlativo.'~~No registrado';
+                $output = $_in."~~No registrado";#$cmp.'*'.$correlativo.'~~No registrado';
                 $type = '1';
             }
         }
@@ -173,22 +195,49 @@ Class RuteoModel
 
         $user_session = $cliente->vendedor;
         $id_codigo = $cliente->codigo;
+        $_in = $cliente->_in;
+
         $zonas = $this->_buscar_zonas($user_session);
-        $src_clientes = $this->db->prepare(_sql_buscar_clientes());
-        $src_clientes->bindparam(":zonas", $zonas);
+
+        // print _sql_buscar_clientes($_in);
+        // return false;
+
+        $src_clientes = $this->db->prepare(_sql_buscar_clientes($_in));
+
+        if(strlen($_in) == 0)
+        {
+            $src_clientes->bindparam(":zonas", $zonas);
+        }else
+        {
+            $src_clientes->bindparam(":in", $_in);
+        }      
 
         if($src_clientes->execute())
         {
-            if($src_clientes->rowCount() > 0)
+            if($src_clientes->rowCount() == 1)
+            {
+                $r_clientes = $src_clientes->fetch(PDO::FETCH_ASSOC);
+
+                $codigo = $r_clientes['codigo'];
+                $ruc = $r_clientes['ruc'];
+                $nombre_comercial = $r_clientes['nombre_comercial'];
+                $razon_social = $r_clientes['razon_social'];
+                $direccion = $r_clientes['direccion'];
+                $distrito = $r_clientes['distrito'];
+
+                $output = $codigo.'~~'.$razon_social;
+                $type = '1';
+            }
+            else if($src_clientes->rowCount() > 1)
             {
                 #<th class="text-center">Codigo</th>
                 $output .= '<table id="table_listado_clientes" data-toggle="table" data-page-size="10" data-pagination="true" class="table-condensed table table-hover table-bordered table-sm" style="display: table;font-size:0.8em;">
                                 <thead class="text-white " style="background-color:#588D9C;">
                                     <th class="text-center">#</th>
-
+                                    <th class="text-center">Cod.I.</th>
                                     <th class="text-center">Ruc</th>
                                     <th class="text-center">Nombre C.</th>
-                                    <th class="text-center">Razon S.</th>
+                                    <!--<th class="text-center">Razon S.</th>!-->
                                     <th class="text-center">Direccion</th>
                                 </thead>
                                 <tbody style="color:black;font-family:verdana;font-size:0.85em;">';
@@ -201,16 +250,18 @@ Class RuteoModel
                     $direccion = $r_clientes['direccion'];
                     $distrito = $r_clientes['distrito'];
                     #<td>'.$codigo.'</td>
+                    #<button class="btn btn-inverse btn-sm waves-effect waves-light" onclick="__send_values__('."'codigo_".$id_codigo."~~cliente_".$id_codigo."'".', '."'".$ruc."~~".$razon_social."'".' , '."'val~~val'".', '."'modal-events-mm'".');">
                     $output .= ' <tr>
                                     <td>
-                                        <button class="btn btn-inverse btn-sm waves-effect waves-light" onclick="__send_values__('."'codigo_".$id_codigo."~~cliente_".$id_codigo."'".', '."'".$ruc."~~".$razon_social."'".' , '."'val~~val'".', '."'modal-events-mm'".');">
+                                        <button class="btn btn-inverse btn-sm waves-effect waves-light" onclick="__send_values__('."'codigo_".$id_codigo."~~cliente_".$id_codigo."'".', '."'".$codigo."~~".$razon_social."'".' , '."'val~~val'".', '."'modal-events-mm'".');">
                                             <span class="fa fa-plus"></span>
                                         </button>
                                     </td>
 
+                                    <td>'.$codigo.'</td>
                                     <td>'.$ruc.'</td>
                                     <td>'.$nombre_comercial.'</td>
-                                    <td>'.$razon_social.'</td>
+                                    <!--<td>'.$razon_social.'</td>!-->
                                     <td>'.$direccion.' - '.$distrito.'</td>
                                 </tr>';
                 }
@@ -218,7 +269,7 @@ Class RuteoModel
                 $type = '0';
             }else
             {
-                $output .= '0~~No registrado';
+                $output .= $_in.'~~No registrado';
                 $type = '1';
             }
         }
@@ -254,7 +305,6 @@ Class RuteoModel
             $importes = explode("||", implode($array_importes, "||"));
             $observaciones = explode("||", implode($array_observaciones, "||"));
             $tipos = explode("||", implode($array_tipos, "||"));
-
         }else
         {
             $horas = $array_horas;
@@ -265,9 +315,7 @@ Class RuteoModel
             $observaciones = $array_observaciones;
             $tipos = $array_tipos;
         }
-
         #go SQL [INSERT]
-
         $sql1 = $this->db->prepare(_sql_insertar_ruteo_());
         for($i = 0; $i < count($horas); $i++)
         {
@@ -368,7 +416,7 @@ Class RuteoModel
                         </td>
                         <td>
                         <div class="input-group">
-                        <input id="codigo_'.$id.'" value="'.$codigo.'" name="codigos_insertar[]" style="width:20% !important;" pattern="[0-9.]+" type="number" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">
+                        <input id="codigo_'.$id.'" value="'.$codigo.'" name="codigos_insertar[]" onblur="_blur_buscar_clientes_medicos('.$id.');" style="width:20% !important;" pattern="[0-9.]+" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">
                         <input id="cliente_'.$id.'" value="'.$cliente.'" name="clientes_insertar[]" style="width:30% !important;" type="text" readonly="true"  class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cliente">
                         <span class="input-group-addon input-sm bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__('."'codigo_".$id.",cliente_".$id."'".');">
                         <i class="fa fa-trash"></i>
@@ -557,7 +605,9 @@ Class RuteoModel
                     $vendedor = $r_sql1['nombre_corto'];
 
                     $output .= '<tr>
-                                <td><input type="checkbox" name="codigos[]" value="'.$vendedor_codigo.'" checked="true"></td>
+                                <td>
+                                <input type="hidden" value="'.$year.'-'.$month.'-'.zerofill($_i_, 3).'" name="correlativos[]">
+                                <input type="checkbox" name="codigos[]" value="'.$vendedor_codigo.'" checked="true"></td>
                                 <td>'.$vendedor.'</td>';
 
                     $sql2 = $this->db->prepare(_sql_contar_dias_ruteo());
@@ -591,46 +641,21 @@ Class RuteoModel
 
     }
     public function _print_ruteos($data)
-    {
+    {  
         $output = NULL;
         $new_pdf = new mPDF('c', 'A4');
-        $cabecera = '<table class="table" style="width:100%;background-color:black;">
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        2018-10-055<br />
-                                        RAZON SOCIAL: <br />
-                                        RUC: <br />
-                                        PERIODO: <br />
-                                    </td>
-                                    <td>
-                                        PLANILLAS DE GASTO DE MOVILIDAD LOCAL - POR TRABAJADOR <br />
-                                        MKS UNIDOS S.A. <br />
-                                        AV. SEPARADORA INDUSTRIAL N 487  -  FECHA DE EMISION '. date('d MM YYYY') .' <br />
-                                        DEL {{_MIN_DAY_}} AL {{_MAX_DAY_}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                    DATOS DEL TRABAJADOR <br />
-                                    NOMBRES Y APELLIDOS:    {{NOMBRE_REPRESENTANTE}}
-                                    D.N.I:
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>';
-        $new_pdf->WriteHTML('<h1>Hello world!</h1>');
-        $new_pdf->Output('reporte12.pdf', 'I');
 
-        #$codigos = str_replace("||", ",", $data->codigos);
-/*
+        $css = file_get_contents('public/assets/css/bootstrap.min.css');
+        $new_pdf->WriteHTML($css, 1);
+
         if(strpos($data->codigos, "||") !== FALSE)
         {
             $codigos = explode("||",$data->codigos);
+            $correlativos = explode("||",$data->correlativos);
         }else
         {
             $codigos[] = $data->codigos;
+            $correlativos[] = $data->correlativos;
         }
 
         $year = $data->year;
@@ -639,78 +664,42 @@ Class RuteoModel
         $_min_day_ = $data->_min_day_;
         $_max_day_ = $data->_max_day_;
 
-        $new_name = 'owker';
-
         for ($c = 0; $c < count($codigos) ; $c++)
         {
+            $new_pdf->AddPage();
             $representantes = $codigos[$c];
 
-            $_header_a1 = "2018-10-055 \nRAZON SOCIAL: \nRUC: \nPERIODO:";
-
-            $_header_a2 = " DATOS DEL TRABAJADOR \nNOMBRES Y APELLIDOS:    ".strtoupper(search_repre_name($representantes))."D.N.I:";
-
-            $_header_a3 = '';
-            $_header_a4 = "PLANILLAS DE GASTO DE MOVILIDAD LOCAL - POR TRABAJADOR \nMKS UNIDOS S.A. \nAV. SEPARADORA INDUSTRIAL N° 487  -  FECHA DE EMISION ". date('d M Y') ." \nDEL ".$_min_day_." AL ".$_max_day_;
-
-            $__init_header__ = '<table class="">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            2018-10-055<br />
+            $__init_header__ = '<table class="table" style="font-size:0.75em;">
+                                    <tbody style="border:1.5px solid black;">
+                                    <tr style="border:1.5px solid black;">
+                                        <td style="border:1.5px solid black;width:30% !important;">
+                                            '.$correlativos[$c].'<br />
                                             RAZON SOCIAL: <br />
                                             RUC: <br />
                                             PERIODO: <br />
                                         </td>
-                                        <td>
+                                        <td style="border:1.5px solid black;width:70% !important;">
                                             PLANILLAS DE GASTO DE MOVILIDAD LOCAL - POR TRABAJADOR <br />
                                             MKS UNIDOS S.A. <br />
-                                            AV. SEPARADORA INDUSTRIAL N° 487  -  FECHA DE EMISION '. date('d M Y') .' <br />
-                                            DEL '.$_min_day_.' AL '.$_max_day_.'
+                                            AV. SEPARADORA INDUSTRIAL N° 487  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            FECHA DE EMISION &nbsp;&nbsp;'. date('d M Y') .' <br />
+                                            DEL '.$_min_day_.'/'.$month.'/'.$year.'&nbsp;&nbsp;&nbsp;&nbsp;AL&nbsp;&nbsp;&nbsp;&nbsp;'.$_max_day_.'/'.$month.'/'.$year.'
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
+                                    <tr style="border:1.5px solid black;">
+                                        <td style="border:1.5px solid black;"></td>
+                                        <td style="border:1.5px solid black;">
                                         DATOS DEL TRABAJADOR <br />
                                         NOMBRES Y APELLIDOS:    '.strtoupper(search_repre_name($representantes)).'
-                                        D.N.I:
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.N.I:
                                         </td>
                                     </tr>
                                     </tbody>
                                 </table>';
 
-
-            // $new_pdf->Cell($_header_a1, 7, 0, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a2, 7, 1, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a3, 7, 2, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a4, 7, 3, 1, 0, 'C');
-            // $new_pdf->Ln();
-
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a1), 7, 0, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a2), 7, 1, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a3), 7, 2, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a4), 7, 3, 1, 0, 'C');
-
-
-            // $new_pdf->AddPage();
-            // $new_pdf->SetFont('Arial','B',8);
-
-            // $new_pdf->Cell($_header_a1, 7, 0, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a2, 7, 1, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a3, 7, 2, 1, 0, 'C');
-            // $new_pdf->Cell($_header_a4, 7, 3, 1, 0, 'C');
-            #$new_pdf->WriteHTML($__init_header__);
-
-            // $new_pdf->MultiCell(50, 5, $_header_a1, 1, 1, 0, 'C');
-            // $new_pdf->MultiCell(100, 5, $_header_a4, 1, 2, 0, 'C');
-            // $new_pdf->MultiCell(50, 5, $_header_a1, 1, 1, 0, 'C');
-            // $new_pdf->MultiCell(100, 5, $_header_a4, 1, 2, 0, 'C');
-            // $new_pdf->Ln();
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a1), 7, 0, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a2), 7, 1, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a3), 7, 2, 1, 0, 'C');
-            // $new_pdf->Cell($new_pdf->WriteHTML($_header_a4), 7, 3, 1, 0, 'C');
-            //$new_pdf->Ln(5);
+            $new_pdf->WriteHTML($__init_header__);
+            $new_pdf->Ln(5);
 
             $sql1 = $this->db->prepare(_sql_listado_ruteo_pagos());
             $sql1->bindparam(":codigos", $representantes);
@@ -722,25 +711,25 @@ Class RuteoModel
             {
                 if($sql1->rowCount() > 0)
                 {
-                    $output = '<table class="table table-bordered">
+                    $output = '<table class="table table-bordered" style="font-size: 0.8em;">
                                 <thead>
                                     <tr>
-                                        <th>'.$representantes.'</th>
-                                        <th>Gastos Destinos</th>
-                                        <th>Motivo</th>
-                                        <th>Destinos</th>
-                                        <th>Viaje</th>
-                                        <th>cod</th>
+                                        <th class="text-center">Fecha</th>
+                                        <th class="text-center">Gastos Destinos</th>
+                                        <th class="text-center">Motivo</th>
+                                        <th class="text-center">Destinos</th>
+                                        <th class="text-center">Viaje</th>
+                                        <th class="text-center">cod</th>
                                     </tr>
                                 </thead>
                                 <tbody>';
+
                     $fecha_mirrow = NULL;
                     $_init_ = 1;
 
                     while($r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC))
                     {
                         $fecha = $r_sql1['fecha'];
-
 
                         $vendedor = $r_sql1['vendedor'];
                         $cliente = $r_sql1['cliente'];
@@ -752,139 +741,73 @@ Class RuteoModel
                         if($fecha != $fecha_mirrow && $fecha_mirrow != NULL)
                         {
                             $output .= '<tr>
-                                        <td>'.$fecha_mirrow.'</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>350</td>
-                                    </tr>';
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">'.fecha_db_to_view($fecha_mirrow).'</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="text-center">350</td>
+                                        </tr>';
                         }
 
                         $output .= '<tr>
-                                        <td>'.$fecha.'</td>
+                                        <td class="text-center">'.fecha_db_to_view($fecha).'</td>
                                         <td>'.$cliente_desc.'</td>
                                         <td>'.strtoupper($objetivo).'</td>
                                         <td>'.$destino.'</td>
                                         <td>'.$viaje.'</td>
-                                        <td>'.$cliente.'</td>
+                                        <td class="text-center">'.$cliente.'</td>
                                     </tr>';
+
                         $fecha_mirrow = $fecha;
 
                         if($sql1->rowCount() == $_init_)
                         {
-                            $output .= '<tr>
-                                        <td>'.$fecha_mirrow.'</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>350</td>
+                            $output .= '
+                            <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    <tr>
+                                        <td class="text-center">'.fecha_db_to_view($fecha_mirrow).'</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-center">350</td>
                                     </tr>';
                         }
                         $_init_++;
                     }
                     $output .= '</tbody></table>';
                 }
-
             }
             $new_pdf->WriteHTML($output);
         }
-        $new_pdf->writeHTML("<div>LOREM</div>");
-        $new_pdf->Output();*/
+        #$new_pdf->SetJS('this.print();');
+        $correlative_ = "Reporte_".date('ymdhis').".pdf";
+        $new_pdf->Output($correlative_, "I");
 
     }
-    public function _print_ruteos2($data)
-    {
-        $output = 'xd';
-
-        $codigos = str_replace("||", ",", $data->codigos);
-        $year = $data->year;
-        $month = $data->month;
-        $quincena = $data->quincena;
-        $_min_day_ = $data->_min_day_;
-        $_max_day_ = $data->_max_day_;
-
-        $new_name = 'owker';
-
-        $sql1 = $this->db->prepare(_sql_listado_ruteo_pagos());
-        $sql1->bindparam(":codigos", $codigos);
-        $sql1->bindparam(":year", $year);
-        $sql1->bindparam(":month", $month);
-        $sql1->bindparam(":_min_day_", $_min_day_);
-        $sql1->bindparam(":_max_day_", $_max_day_);
-
-        /*if($sql1->execute())
-        {
-            if($sql1->rowCount() > 0)
-            {
-                $cabecera = '<table class="table" style="width:100%;">
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        2018-10-055<br />
-                                        RAZON SOCIAL: <br />
-                                        RUC: <br />
-                                        PERIODO: <br />
-                                    </td>
-                                    <td>
-                                        PLANILLAS DE GASTO DE MOVILIDAD LOCAL - POR TRABAJADOR <br />
-                                        MKS UNIDOS S.A. <br />
-                                        AV. SEPARADORA INDUSTRIAL N° 487  -  FECHA DE EMISION '. date('d MM YYYY') .' <br />
-                                        DEL {{_MIN_DAY_}} AL {{_MAX_DAY_}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                    DATOS DEL TRABAJADOR <br />
-                                    NOMBRES Y APELLIDOS:    {{NOMBRE_REPRESENTANTE}}
-                                    D.N.I:
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>';
-
-                $output .= '<table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Gastos Destinos</th>
-                                    <th>Motivo</th>
-                                    <th>Destinos</th>
-                                    <th>Viaje</th>
-                                    <th>cod</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                while($r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC))
-                {
-                    $vendedor = $r_sql1['vendedor'];
-                    $fecha = $r_sql1['fecha'];
-                    $cliente = $r_sql1['cliente'];
-                    $cliente_desc = $r_sql1['cliente_desc'];
-                    $objetivo = "atencion al cliente";#$r_sql1['objetivo'];
-                    $destino = $r_sql1['destino'];
-                    $viaje = $r_sql1['viaje'];
-
-                    $output = '<tr>
-                                    <td>'.$fecha.'</td>
-                                    <td>'.$cliente_desc.'</td>
-                                    <td>'.$objetivo.'</td>
-                                    <td>'.$destino.'</td>
-                                    <td>'.$viaje.'</td>
-                                    <td>'.$cliente.'</td>
-                                </tr>';
-                }
-                $output .= '</tbody></table>';
-            }
-        }else
-        {
-            return errorPDO($sql1);
-        }*/
-
-    }
-    public function _print_ruteos221($data)
+    
+    
+    
+    
+    
+    
+    public function _print_test($data)
     {
         $pdf = new mPDF();
        // Logo
@@ -957,7 +880,6 @@ Class RuteoModel
 
         $pdf->Output();
     }
-
     public function __destruct()
     {
         $this->db = NULL;#Connection Desctruct#

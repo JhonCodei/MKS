@@ -77,7 +77,7 @@ Class RuteoController
                         '.$btn.'
                     </div>
                     <hr>
-                    <div id="div_modal_body"></div>
+                    <div id="div_modal_body" class="table-responsive" style="width:100%;"></div>
                 </div>';
                     
         print $output;
@@ -92,6 +92,7 @@ Class RuteoController
 
         $medico->codigo = $codigo_;
         $medico->vendedor = $user_session;
+        $medico->_in = $_POST['_in'];
         $medico->periodo = $periodo;
 
         print $this->model->_buscar_medico($medico);
@@ -105,6 +106,7 @@ Class RuteoController
 
         $cliente->codigo = $_POST['codigo'];
         $cliente->vendedor = info_usuario('codigo');
+        $cliente->_in = $_POST['_in'];
         $cliente->periodo = $periodo;
 
         print $this->model->_buscar_cliente($cliente);
@@ -153,12 +155,15 @@ Class RuteoController
             $observaciones[] = $observaciones_get;
             $tipos[] = $tipos_get;
         }
+        
 
         $count  = count($horas);
 
+        //print_r($count); return false;
+
         for ($c = 0; $c < $count; $c++)
         { 
-            if($codigos[$c] != 0 && $codigos[$c] != null)
+            if($horas[$c] != 0 && $horas[$c] != null)
             {
                 $array_horas[] = $horas[$c];
                 $array_codigos[] = $codigos[$c];
@@ -169,7 +174,7 @@ Class RuteoController
                 $array_tipos[] = $tipos[$c]; 
             }else
             {
-                print "Ingrese el codigo";
+                print "Ingrese el codigo2";
                 return false;
             }
         }
@@ -284,7 +289,7 @@ Class RuteoController
                 $array_tipos[] = $tipos[$c]; 
             }else
             {
-                print "Ingrese el codigo";
+                print "Ingrese el codigo up";
                 return false;
             }
         }
@@ -377,6 +382,8 @@ Class RuteoController
     public function _print_ruteos()
     {
         $codigos = $_POST['codigos'];
+        $correlativos = $_POST['correlativos'];
+
         $data = $_POST['data'];
         $_split = explode("-", $data);
 
@@ -389,6 +396,7 @@ Class RuteoController
         $print = $this->model;
         
         $print->codigos = $codigos;
+        $print->correlativos = $correlativos;
         $print->year = $year;
         $print->month = $month;
         $print->quincena = $quincena;

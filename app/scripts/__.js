@@ -306,7 +306,10 @@ function print_id_content(id_contend) {
 
     setInterval(function() { location.reload(); }, 1500);
 }
-
+function isNumeric(n)
+{
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
 function excelDiv(divName) {
     var fechahora = new Date();
 
