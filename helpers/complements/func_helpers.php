@@ -169,6 +169,15 @@ function __css_js__($element)
     $e['bootstrap-filestyle_JS'] = "plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js";
     $e['bootstrap-timepicker_CSS'] = "plugins/timepicker/bootstrap-timepicker.min.css";
     $e['bootstrap-timepicker_JS'] = "plugins/timepicker/bootstrap-timepicker.js";
+    $e['bootstrap-timepicker_JS'] = "plugins/timepicker/bootstrap-timepicker.js";
+    
+    #DATATABLES
+    $e['datatables-editor_JS'] = "js/dataTables.editor.js";
+    $e['datatables-editor_MIN_JS'] = "js/dataTables.editor.min.js";
+    $e['datatables-bootstrap_editor_MIN_JS'] = "js/editor.bootstrap.min.js";
+    $e['datatables-bootstrap_editor_4_JS'] = "js/editor.bootstrap4.js";
+    $e['datatables-bootstrap_editor_4_MIN_JS'] = "js/editor.bootstrap4.min.js";
+    #DATATABLES
     
     return $e[$element];
 }
@@ -532,21 +541,6 @@ function required_content($content)
         print $ContentData[$i];
     }
 }
-function validate_periodo_gastos()
-{
-    $dia = date('d');
-
-    if($dia <= 15)
-    {
-        $option = '<option value="1" selected>Primera</option>
-                    <option value="2">Segunda</option>';
-    }else
-    {
-        $option = '<option value="1">Primera</option>
-                    <option value="2" selected>Segunda</option>';
-    }
-    print $option;
-}
 function zerofill($valor, $longitud)
 {
     $res = str_pad($valor, $longitud, '0', STR_PAD_LEFT);
@@ -672,6 +666,20 @@ function fecha_to_periodo_del_($var, $delimeter)
     }    
 
     return $periodo = (int)$year.$mes;
+}
+function check_in_range_date($fecha_inicio, $fecha_fin, $fecha)
+{
+    $fecha_inicio = strtotime($fecha_inicio);
+    $fecha_fin = strtotime($fecha_fin);
+    $fecha = strtotime($fecha);
+
+    if(($fecha >= $fecha_inicio) && ($fecha <= $fecha_fin))
+    {
+        return TRUE;
+    }else
+    {
+        return FALSE;
+    }
 }
 function diferenciadias($inicio, $fin)
 {
@@ -1104,6 +1112,11 @@ function dias_pasados($fecha_inicial, $fecha_final)
     $dias = floor($dias);
     return $dias;
 }
+function __days_in_month($month, $year)
+{
+    return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+}
+
 
 
 ob_end_flush();

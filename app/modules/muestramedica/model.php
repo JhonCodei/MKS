@@ -268,7 +268,7 @@ public function _buscar_supervisor($cod_sup)
                     $codigo = $supervisor_r['codigo'];
                     $nombre = $supervisor_r['nombre'];
 
-                    $output .= ' <tr>
+                    $output .= '<tr>
                                     <td>
                                         <button class="btn btn-inverse btn-sm waves-effect waves-light" onclick="send_field_('."'cod_sup'".','."'".$codigo."'".', '."'name_sup'".', '."'".$nombre."'".')"><span class="fa fa-plus"></span></button>
                                     </td>

@@ -261,7 +261,7 @@ function newElement2(e, xx, element, form)
     </td>\
     <td>\
     <div class="input-group">\
-    <input id="codigo_' + d + '" name="codigos_insertar[]" onblur="_blur_buscar_clientes_medicos('+ i +');" style="width:20% !important;" pattern="[0-9.]+" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
+    <input id="codigo_' + d + '" name="codigos_insertar[]" onblur="_blur_buscar_clientes_medicos('+ d +');" style="width:20% !important;" pattern="[0-9.]+" type="text" size="5" maxlength="11"  class="form-control input-sm text-center border border-secondary font_inside_input" onkeypress="return max_length(this.value, 10);validateNumber(event);" placeholder="Codigo">\
     <input id="cliente_' + d + '" name="clientes_insertar[]" style="width:30% !important;" type="text" readonly="true"  class="form-control input-sm text-center border border-secondary font_inside_input" placeholder="Cliente">\
     <span class="input-group-addon input-sm bg-danger text-white font-weight-bold border border-danger waves-light waves-effect" onclick="__clear__(' + "'codigo_" + d + ",cliente_" + d + "'" + ');">\
     <i class="fa fa-trash"></i>\
@@ -540,7 +540,6 @@ function _insertar_ruteo()
     var observaciones = $("textarea[name='observaciones_insertar[]']").map(function() { return $(this).val(); }).get().join("||")
     var tipos = $("select[name='tipos_insertar[]'] option:selected").map(function() { return $(this).val(); }).get().join("||")
 
-    console.log(codigos);
     postData.append("fecha", fecha)
     postData.append("horas", horas)
     postData.append("codigos", codigos)

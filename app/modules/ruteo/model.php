@@ -9,15 +9,45 @@ Class RuteoModel
         require_once 'helpers/libraries/MPDF/mpdf.php';
     }
     #__functions__
-    public function _ruteo_cerrado_($datetime)
+    public function _ruteo_cerrado_($data)
     {
-        $output = FALSE;
+        $today = $data->datetime;
+        $fecha = $data->fecha;
+        $user_session = $data->vendedor;
+        $module = $data->module;
+        
+        $output = "FALSE~NULL~NULL";
 
-        // $estado = $this->db->prepare();
-        // if($estado)
-        // {
+        $sql1 = $this->db->prepare(_sql_validate_permitions());
+        $sql1->bindparam(":module", $module);
+        if($sql1->execute())
+        {
+            if($sql1->rowCount() > 0)
+            {
+                $r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC);
+                #$modulo = $r_sql1['modulo'];
+                $usuarios = $r_sql1['usuarios'];
+                $inicio = $r_sql1['inicio'];
+                $fin = $r_sql1['fin'];
+                
+                if($usuarios == 'all')
+                {
+                    if(check_in_range_date($inicio, $fin, $fecha))
+                    {
+                        $output = "TRUE~".$inicio."~".$fin;
+                    }
+                    #else{ $output = "FALSE~".$inicio."~".$fin;}
+                }else
+                {
+                    $_split_usuarios = explode(",", $usuarios);
 
-        // }
+                    if(in_array($user_session, $_split_usuarios) && check_in_range_date($inicio, $fin, $fecha))
+                    {
+                        $output = "TRUE~".$inicio."~".$fin;
+                    }
+                }
+            }
+        }
         return $output;
     }
     public function _check_ruteo_($user_session, $fecha)
@@ -294,7 +324,9 @@ Class RuteoModel
         $array_observaciones = $ruteo->array_observaciones;
         $array_tipos = $ruteo->array_tipos;
 
+        #[DELETE RUTEO]
         $this->_eliminar_ruteo($user_session, $fecha);
+        #[DELETE RUTEO]
 
         if(is_array($array_horas))
         {
@@ -317,15 +349,25 @@ Class RuteoModel
         }
         #go SQL [INSERT]
         $sql1 = $this->db->prepare(_sql_insertar_ruteo_());
+
         for($i = 0; $i < count($horas); $i++)
         {
             if($importes[$i] == null){$importes_ = 0;}else{$importes_ = $importes[$i];}
+            
+            $datos_c = explode("|~|", $this->_datos_complementos_($codigos[$i], $user_session));
+            $direccion = $datos_c[1];
+            $distrito = $datos_c[0];
 
             $sql1->bindparam(":user_session", $user_session);
             $sql1->bindparam(":fecha", $fecha);
             $sql1->bindparam(":horas", $horas[$i]);
             $sql1->bindparam(":codigos", $codigos[$i]);
             $sql1->bindparam(":clientes", $clientes[$i]);
+
+            $sql1->bindparam(":cod_int", $codigos[$i]);
+            $sql1->bindparam(":direccion", $direccion);
+            $sql1->bindparam(":distrito", $distrito);
+
             $sql1->bindparam(":objetivos", $objetivos[$i]);
             $sql1->bindparam(":importes", $importes_);
             $sql1->bindparam(":observaciones", $observaciones[$i]);
@@ -470,10 +512,6 @@ Class RuteoModel
         $distrito = "No especificado";
 
         $sql1 = $this->db->prepare(_sql_datos_complementos($codigo, $user_session));
-        // if($codigo > 10000000001)
-        // {
-        //     $sql1->bindparam(":user_session", $user_session);
-        // }
         $sql1->bindparam(":codigo", $codigo);
         if($sql1->execute())
         {
@@ -484,7 +522,6 @@ Class RuteoModel
                 $distrito = $r_sql1['distrito'];
             }
         }
-
         return $distrito.'|~|'.$direccion;
 
     }
@@ -523,12 +560,11 @@ Class RuteoModel
                     $observaciones = $r_sql1['observaciones'];
                     $importe = $r_sql1['importe'];
                     $tipo = $r_sql1['tipo'];
+                    $direccion = $r_sql1['direccion'];
+                    $distrito = $r_sql1['distrito'];
 
-                    $datos_c = explode("|~|", $this->_datos_complementos_($codigo, $user_session));
-                    $direccion = $datos_c[1];
-                    $distrito = $datos_c[0];
-
-                    switch ($objetivo) {
+                    switch ($objetivo)
+                    {
                         case 'vs':
                             $objetivo = 'Visita';
                             break;
@@ -561,6 +597,7 @@ Class RuteoModel
         }
         return $output;
     }
+    ####PAGOS####
     public function _listar_ruteo_pagos($listado)
     {
         $output = NULL;
@@ -572,7 +609,7 @@ Class RuteoModel
         $month = $listado->month;
         $quincena = $listado->quincena;
 
-        $days_max = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $days_max = __days_in_month($month, $year);
 
         if($quincena == 1){$_min_day = 1;$_max_day = 15;}else{$_min_day = 16;$_max_day = $days_max;}
 
@@ -640,9 +677,28 @@ Class RuteoModel
         return $output;
 
     }
+    public function _count_ruteo_fecha($user_session, $fecha)
+    {
+        $cantidad = 0;
+
+        $sql1 = $this->db->prepare(_sql_count_ruteo_fecha());
+        $sql1->bindparam(":fecha", $fecha);
+        $sql1->bindparam(":vendedor", $user_session);
+        if($sql1->execute())
+        {
+            if($sql1->rowCount() > 0)
+            {
+                $r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC);
+                $cantidad = $r_sql1['cantidad'];
+            }
+        }
+        return $cantidad;
+    }
     public function _print_ruteos($data)
     {  
         $output = NULL;
+        $_mnt_x_day = 16.07;
+
         $new_pdf = new mPDF('c', 'A4');
 
         $css = file_get_contents('public/assets/css/bootstrap.min.css');
@@ -663,9 +719,11 @@ Class RuteoModel
         $quincena = $data->quincena;
         $_min_day_ = $data->_min_day_;
         $_max_day_ = $data->_max_day_;
-
+        
         for ($c = 0; $c < count($codigos) ; $c++)
         {
+            $_x_month = 0;
+            $_totales = 0;
             $new_pdf->AddPage();
             $representantes = $codigos[$c];
 
@@ -711,18 +769,18 @@ Class RuteoModel
             {
                 if($sql1->rowCount() > 0)
                 {
-                    $output = '<table class="table table-bordered" style="font-size: 0.8em;">
+                    $output = '<table class="table table-bordered table-condensed" style="font-size: 0.75em;">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Fecha</th>
-                                        <th class="text-center">Gastos Destinos</th>
-                                        <th class="text-center">Motivo</th>
-                                        <th class="text-center">Destinos</th>
-                                        <th class="text-center">Viaje</th>
-                                        <th class="text-center">cod</th>
+                                        <th class="text-center" style="width:10% !important;">Fecha</th>
+                                        <th class="text-center" style="width:10% !important;">Gastos Destinos</th>
+                                        <th class="text-center" style="width:10% !important;">Motivo</th>
+                                        <th class="text-center" style="width:10% !important;">Destinos</th>
+                                        <th class="text-center" style="width:10% !important;">Viaje</th>
+                                        <th class="text-center" style="width:10% !important;">Codigo</th>
                                     </tr>
                                 </thead>
-                                <tbody>';
+                                <tbody style="font-size:0.6em !important;">';
 
                     $fecha_mirrow = NULL;
                     $_init_ = 1;
@@ -736,12 +794,35 @@ Class RuteoModel
                         $cliente_desc = $r_sql1['cliente_desc'];
                         $objetivo = "atencion al cliente";#$r_sql1['objetivo'];
                         $destino = $r_sql1['destino'];
+                        $distrito = $r_sql1['distrito'];
                         $viaje = $r_sql1['viaje'];
+                        $cliente_int = $r_sql1['cliente_int'];
+
+                        if(strlen($cliente_int) == 0)
+                        {
+                            $cliente_int = $cliente;
+                        }
+
+                        $rt_x_fecha = $this->_count_ruteo_fecha($representantes, $fecha);
+
+                        if($fecha_mirrow == NULL)
+                        {
+                            $sum_mnt_x_day = 0;
+                        }
 
                         if($fecha != $fecha_mirrow && $fecha_mirrow != NULL)
                         {
+                           
                             $output .= '<tr>
+                                            <td class="text-center">'.fecha_db_to_view($fecha_mirrow).'</td>
                                             <td></td>
+                                            <td>Total</td>
+                                            <td></td>
+                                            <td class="text-center">'.round($sum_mnt_x_day, 2).'</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -749,64 +830,85 @@ Class RuteoModel
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            <td class="text-center">'.fecha_db_to_view($fecha_mirrow).'</td>
+                                            <td>&nbsp;</td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td class="text-center">350</td>
+                                            <td></td>
                                         </tr>';
+                            $_totales += $sum_mnt_x_day;
+                            $sum_mnt_x_day = 0;  
                         }
+
+                        $rt_x_vs_ = ($_mnt_x_day/$rt_x_fecha);
 
                         $output .= '<tr>
                                         <td class="text-center">'.fecha_db_to_view($fecha).'</td>
-                                        <td>'.$cliente_desc.'</td>
+                                        <td>'.strtoupper($cliente_desc).'</td>
                                         <td>'.strtoupper($objetivo).'</td>
-                                        <td>'.$destino.'</td>
-                                        <td>'.$viaje.'</td>
-                                        <td class="text-center">'.$cliente.'</td>
+                                        <td>'.strtoupper($destino.' - '.$distrito).'</td>
+                                        <td class="text-center">'.round($rt_x_vs_, 2).'</td>
+                                        <td class="text-center">'.$cliente_int.'</td>
                                     </tr>';
 
-                        $fecha_mirrow = $fecha;
+                        $sum_mnt_x_day += $rt_x_vs_;
 
+                        $fecha_mirrow = $fecha;
+                        
                         if($sql1->rowCount() == $_init_)
                         {
                             $output .= '
-                            <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
                                     <tr>
                                         <td class="text-center">'.fecha_db_to_view($fecha_mirrow).'</td>
                                         <td></td>
+                                        <td>Total</td>
+                                        <td></td>
+                                        <td class="text-center">'.round($sum_mnt_x_day, 2).'</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td class="text-center">350</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>';
+                            $_totales += $sum_mnt_x_day;
                         }
                         $_init_++;
+                        
                     }
+                    
                     $output .= '</tbody></table>';
+                    $output .= '<br />
+                                <div class="text-right">
+                                    <div>TOTALES &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '.$_totales.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                </div>';
+                    $output .= '<br /><br />';                    
+                    $output .= '<div class="text-right">
+                                    <div class="text-center">________________________</div>
+                                    <div class="text-center" style="font-size:0.8em !important;">'.strtoupper(search_repre_name($representantes)).'</div>
+                                </div>';
                 }
             }
             $new_pdf->WriteHTML($output);
         }
-        #$new_pdf->SetJS('this.print();');
+        $new_pdf->SetJS('this.print();');
         $correlative_ = "Reporte_".date('ymdhis').".pdf";
         $new_pdf->Output($correlative_, "I");
 
     }
-    
-    
-    
-    
-    
-    
+    ####PAGOS####
     public function _print_test($data)
     {
         $pdf = new mPDF();

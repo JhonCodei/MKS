@@ -2,8 +2,8 @@
 #Code
 function _sql_insertar_ruteo_()
 {
-  $sql = "INSERT INTO ruteo(vendedor, cliente, cliente_desc, objetivo, importe, fecha, hora, observaciones, tipo)
-          VALUES(:user_session, :codigos, :clientes, :objetivos, :importes, :fecha, :horas, :observaciones, :tipos)";
+  $sql = "INSERT INTO ruteo(vendedor, cliente, cliente_desc, cod_int, direccion, distrito, objetivo, importe, fecha, hora, observaciones, tipo)
+          VALUES(:user_session, :codigos, :clientes, :cod_int, :direccion, :distrito, :objetivos, :importes, :fecha, :horas, :observaciones, :tipos)";
   return $sql;
 }
 function _sql_buscar_ruteo_()
@@ -11,6 +11,8 @@ function _sql_buscar_ruteo_()
     $sql = "SELECT 
                 cliente AS codigo,
                 cliente_desc AS cliente,
+                direccion,
+                distrito,
                 objetivo,
                 hora,
                 observaciones,
@@ -206,14 +208,26 @@ function _sql_buscar_clientes($in = 0)
 function _sql_datos_complementos($codigo, $user_session)
 {
     $sql = null;
-
-    if($codigo > 10000000001)
+    
+    if(is_numeric($codigo))
     {
-        $sql = "SELECT distrito, direccion FROM maestro_clientes WHERE ruc = :codigo LIMIT 1";
+        if($codigo > 10000000001)
+        {
+            $sql = "SELECT distrito, direccion FROM maestro_clientes WHERE ruc = :codigo LIMIT 1";
+        }else
+        {
+            $sql = "SELECT medico_direccion AS direccion, medico_localidad AS distrito FROM tbl_maestro_medicos WHERE medico_cmp = :codigo LIMIT 1";
+        }
     }else
     {
-        $sql = "SELECT medico_direccion AS direccion, medico_localidad AS distrito FROM tbl_maestro_medicos WHERE medico_cmp = :codigo LIMIT 1";
+        $sql = "SELECT distrito, direccion FROM maestro_clientes WHERE codigo = :codigo LIMIT 1";
     }
+
+    return $sql;
+}
+function _sql_count_ruteo_fecha()
+{
+    $sql = "SELECT COUNT(fecha) AS cantidad FROM ruteo WHERE fecha = :fecha AND vendedor = :vendedor";
     return $sql;
 }
 #-----------PAGOS---------------
@@ -252,9 +266,10 @@ function _sql_listado_ruteo_pagos()
                 cliente,
                 cliente_desc,
                 objetivo,
-                'Destino' AS destino,
+                direccion AS destino,
+                distrito AS distrito,
                 'Viaje' AS viaje,
-                'Cliente' AS cliente
+                cod_int AS cliente_int
             FROM
                 ruteo
             WHERE
@@ -263,6 +278,17 @@ function _sql_listado_ruteo_pagos()
                     AND DAY(fecha) BETWEEN :_min_day_ AND :_max_day_
             GROUP BY vendedor , fecha , cliente , hora
             ORDER BY vendedor , fecha , hora;";
+    
+    return $sql;
+}
+function _sql_validate_permitions()
+{
+    $sql = "SELECT 
+                modulo, usuarios, inicio, fin
+            FROM
+                permisos
+            WHERE
+                modulo = :module";
     
     return $sql;
 }

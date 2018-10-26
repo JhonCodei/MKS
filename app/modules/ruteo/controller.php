@@ -25,10 +25,72 @@ Class RuteoController
         return render_view($vista, $css_js_1, $css_js_2);
     }
     #__functions__
-    public function _ruteo_cerrado_()
+    public function _ruteo_cerrado_($fecha = NULL, $user_session = NULL)
     {
-        $datetime = date("Y-m-d H:i:s");
-        $this->model->_ruteo_cerrado_($datetime);
+        $data = $this->model;
+        $data->datetime = date("Y-m-d");
+        $data->fecha = $fecha;
+        $data->vendedor = $user_session;
+        $data->module = $__file__;
+
+        $today = date("Y-m-d");
+
+        $add_month = 3;#MESES DISPONIBLES
+
+        $_split_today = explode('-', $today);
+        $t_day = $_split_today[2];
+        $t_month = $_split_today[1];
+        $t_year = $_split_today[0];
+
+        $_split_date = explode("-", $fecha);
+        $year = $_split_date[0];
+        $month = $_split_date[1];
+        $day = $_split_date[2];
+
+        $days_in_month = __days_in_month($month, $year);
+
+        $build_pool_1 = NULL;
+        $build_pool_2 = NULL;
+        $_pool_dates = array();
+
+        $ruteo_estado = $this->model->_ruteo_cerrado_($data);
+        $_split_status = explode("~", $ruteo_estado);
+
+        if($_split_status[0] == "TRUE")#SI HAY EXCEPCIONES SQL
+        {
+            $build_pool_1 = $_split_status[1];
+            $build_pool_2 = $_split_status[2];
+        }else
+        {
+            if($t_day <= 13)
+            {
+                $build_pool_1 = $t_year.'-'.$t_month.'-16';
+                $build_pool_2 = date("Y-m-d", strtotime("+".$add_month." month", strtotime($build_pool_1)));
+
+            }else if ($t_day <= 25)
+            {
+                $build_pool_1 = date("Y-m-d", strtotime("+1 month", strtotime($t_year.'-'.$t_month.'-01')));
+                $build_pool_2 = date("Y-m-d", strtotime("+".$add_month." month", strtotime($build_pool_1))); 
+
+            }else if ($t_day > 25 && $t_day <= $days_in_month)
+            {
+                $build_pool_1 = date("Y-m-d", strtotime("+1 month", strtotime($t_year.'-'.$t_month.'-16')));
+                $build_pool_2 = date("Y-m-d", strtotime("+".$add_month." month", strtotime($build_pool_1)));
+            }           
+        }
+        #####BUILD POOL FECHAS###
+        for($i = $build_pool_1; $i <= $build_pool_2; $i = date("Y-m-d", strtotime($i ."+ 1 days")))
+        {
+            $_pool_dates[] = $i;
+        }
+
+        if(in_array($fecha, $_pool_dates))
+        {
+            return FALSE;
+        }else
+        {
+            return TRUE;
+        }
     }
     public function _check_ruteo_($fecha)#validando si hay ruteo ingresado ese dia
     {
@@ -156,11 +218,8 @@ Class RuteoController
             $tipos[] = $tipos_get;
         }
         
-
         $count  = count($horas);
-
-        //print_r($count); return false;
-
+        # print_r($count); return false;
         for ($c = 0; $c < $count; $c++)
         { 
             if($horas[$c] != 0 && $horas[$c] != null)
@@ -180,7 +239,7 @@ Class RuteoController
         }
 
         /* CONDICIONES */
-        if($this->_ruteo_cerrado_() == TRUE){print "Fuera de fecha!";return false;}
+        #if($this->_ruteo_cerrado_() == TRUE){print "Fuera de fecha!";return FALSE;}
                
         $cliente_repe = repetidos_array(array_filter($array_codigos));
         $horas_repe = repetidos_array(array_filter($array_horas));
@@ -189,24 +248,24 @@ Class RuteoController
         {
             $order = array_search(current($cliente_repe), $array_codigos);
             print "Programaci&oacute;n <b>".$array_codigos[$order]. "</b>, duplicado.";
-            return false;
+            return FALSE;
         }
         if($horas_repe != 0)
         {
             $order = array_search(current($horas_repe), $array_horas);
             print "Programaci&oacute;n <b>".$array_horas[$order]. "</b>, duplicado.";
-            return false;
+            return FALSE;
         }
 
-        if(strlen($_POST['fecha']) == 0){print "Ingrese una fecha";return false;}
+        if(strlen($_POST['fecha']) == 0){print "Ingrese una fecha";return FALSE;}
         // if(strlen($cliente) != 11){print "Verifique la cantidad de digitos del RUC";return false;}
         // if(!intval(trim($cliente))){print 'RUC invalido (debe ser númerico)';return false;}
-
         /* CONDICIONES */
 
-        if($this->_ruteo_cerrado_() == FALSE)
+        if($this->_ruteo_cerrado_($fecha, $user_session) == FALSE)
         {
-            $ruteo = new RuteoModel();
+            $ruteo = $this->model;
+
             $ruteo->user_session = $user_session;
             $ruteo->fecha = $fecha;
             $ruteo->array_horas = $array_horas;
@@ -221,7 +280,7 @@ Class RuteoController
         }else
         {
             print "Ruteo cerrado!";
-            return false;
+            return FALSE;
         }
     }
     public function _buscar_ruteo()

@@ -10,7 +10,9 @@ Class Controller
 
         __MODELS__($__file__);
         __SQL__($__file__);
-         __FUNCTIONS__($__file__);
+        __FUNCTIONS__($__file__);
+
+        $this->model = new Model();
     }
     public function render($vista)
     {
