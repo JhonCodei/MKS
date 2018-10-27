@@ -18,8 +18,8 @@ define('DB_USER', 'root');              # User Database.
 #define('DB_NAME', 'mks_unidos_db');    # Name Database.
 #define('DB_PASS', 'syst3m2090');       # Password Database.
 
-define('DB_NAME', 'mks_restore_13');    # Name Database.
-define('DB_PASS', 'lenovo19');       			# Password Database.
+define('DB_NAME', 'mks_db');    # Name Database.
+define('DB_PASS', 'syst3m2090');       			# Password Database.
 
 # Correo Config
 

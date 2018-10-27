@@ -181,6 +181,21 @@ function listado_gastos()
             _input_search_color();
             $("#listado-gastos_paging").addClass("pull-left"); 
             $(".pagination").css("color", "black");
+
+            var gastos_ = 0;
+            var ventas_ = 0;
+
+
+            $('#listado-gastos tbody tr td:nth-child(7)').each(function() {
+                gastos_ += parseInt($(this).html()) || 0;
+            });
+
+            $('#listado-gastos tbody tr td:nth-child(6)').each(function() {
+                ventas_ += parseInt($(this).html()) || 0;
+            });
+
+            $("#sum_gastos").text( "  S/. " + gastos_.toFixed(2));
+            $("#sum_ventas").text( "  S/. " + ventas_.toFixed(2));
         }
     });
 }

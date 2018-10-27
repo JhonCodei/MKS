@@ -97,7 +97,10 @@ Class GastosModel
         {
             if($sql1->rowCount() > 0) 
             {
-                $output = '<table id="listado-gastos" class="table table-bordered table-sm">
+                $output = '
+                <label class="h5 font-weight-bold">Ventas:&nbsp;&nbsp;</label> <label class="h6 font-weight-bold" id="sum_ventas"></label><br>
+                <label class="h5 font-weight-bold">Gastos:&nbsp;&nbsp;</label> <label class="h6 font-weight-bold" id="sum_gastos"></label><hr>
+                <table id="listado-gastos" class="table table-bordered table-sm">
                                 <thead style="background-color:#476269;font-size:0.75em;" class="text-center text-white">
                                     <th class="text-center">#</th>
                                     <th class="text-center">Fecha</th>
