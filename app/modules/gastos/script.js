@@ -196,6 +196,8 @@ function listado_gastos()
 
             $("#sum_gastos").text( "  S/. " + gastos_.toFixed(2));
             $("#sum_ventas").text( "  S/. " + ventas_.toFixed(2));
+
+            //HOLAPE
         }
     });
 }
