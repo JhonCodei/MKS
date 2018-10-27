@@ -98,7 +98,8 @@ function getQueryVariable(variable)
        }
        return(false);
 }
-function periodo_now() {
+function periodo_now()
+{
     var fechahora = new Date();
 
     var dd = fechahora.getDate();
@@ -112,7 +113,7 @@ function periodo_now() {
     if (mm < 10) {
         mm = '0' + mm;
     }
-    var periodo = yyyy + mm;
+    var periodo = yyyy.toString() + mm.toString();
     return periodo;
 }
 

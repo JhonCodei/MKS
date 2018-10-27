@@ -31,7 +31,7 @@ Class RuteoController
         $data->datetime = date("Y-m-d");
         $data->fecha = $fecha;
         $data->vendedor = $user_session;
-        $data->module = $__file__;
+        $data->module = "ruteo";
 
         $today = date("Y-m-d");
 
@@ -53,7 +53,7 @@ Class RuteoController
         $build_pool_2 = NULL;
         $_pool_dates = array();
 
-        $ruteo_estado = $this->model->_ruteo_cerrado_($data);
+        $ruteo_estado = __modules_permissions__($data->module);#$this->model->_ruteo_cerrado_($data);
         $_split_status = explode("~", $ruteo_estado);
 
         if($_split_status[0] == "TRUE")#SI HAY EXCEPCIONES SQL
@@ -86,10 +86,10 @@ Class RuteoController
 
         if(in_array($fecha, $_pool_dates))
         {
-            return FALSE;
+            return TRUE;
         }else
         {
-            return TRUE;
+            return FALSE;
         }
     }
     public function _check_ruteo_($fecha)#validando si hay ruteo ingresado ese dia
@@ -261,8 +261,7 @@ Class RuteoController
         // if(strlen($cliente) != 11){print "Verifique la cantidad de digitos del RUC";return false;}
         // if(!intval(trim($cliente))){print 'RUC invalido (debe ser númerico)';return false;}
         /* CONDICIONES */
-
-        if($this->_ruteo_cerrado_($fecha, $user_session) == FALSE)
+        if($this->_ruteo_cerrado_($fecha, $user_session) == TRUE)
         {
             $ruteo = $this->model;
 

@@ -10,7 +10,7 @@ Class MuestramedicaController
 
         __MODELS__($__file__);
         __SQL__($__file__);
-         __FUNCTIONS__($__file__);
+        __FUNCTIONS__($__file__);
     }
     public function render($vista)
     {
@@ -261,40 +261,51 @@ Class MuestramedicaController
             #if($year_actual == $year_explo && $mes_actual == $mes_explo && $dia_explo <= $dia_actual)
             #{# ACTIVAR MES ACTUAL
                 /* VALIDAR MAXIMO N DIAS*/
-                $max_days = max_days(date('Y-m-d'), $fecha_mm);
+            $max_days = max_days(date('Y-m-d'), $fecha_mm);
 
-                if($user_session != 999)##AUTORIZADOS COD REPRE ##&& $user_session != 0
+            $estado_module = __modules_permissions__('muestramedica');
+            $_split_module = explode("~", $estado_module);
+
+            $_status_ = $_split_module[0];
+            $_fecha_i_ = $_split_module[1];
+            $_fecha_f_ = $_split_module[2];
+
+            // if($user_session != 999)##AUTORIZADOS COD REPRE ##&& $user_session != 0
+            // {
+            //     if($max_days > 2)
+            //     {
+            //         print 'Solo se permite el ingreso con un maximo de 2 días !';
+            //         return false;
+            //     }
+            // }
+
+            if($_status_ == "FALSE")##AUTORIZADOS COD REPRE ##&& $user_session != 0
+            {
+                if($max_days > 2)
                 {
-                    if($max_days > 2)
-                    {
-                        print 'Solo se permite el ingreso con un maximo de 2 días !';
-                        return false;
-                    }
+                    print 'Solo se permite el ingreso con un maximo de 2 días !';
+                    return false;
                 }
-
-                // if($max_days > 2)
-                // {
-                //     print 'Solo se permite el ingreso con un maximo de 2 días !';
-                //     return false;
-                // }
+            }
 
                 /* VALIDAR MAXIMO N DIAS*/
-                if($status_mm == 1)
+            if($status_mm == 1)
+            {
+                if(empty($array_prod_cod) || empty($array_prod_cant))
                 {
-                    if(empty($array_prod_cod) || empty($array_prod_cant))
-                    {
-                        $estado_1_vacio = true;
-                    }
+                    $estado_1_vacio = true;
                 }
-                if($estado_1_vacio == true)
-                {
-                    print 'Estado "EMITIDO", debe ingresar al menos 1 producto.';
-                    return false;
-                }else
-                {   
-                    $Class = new MuestramedicaModel();
-                    print $Class->insert_muestra_medica($user_session, $med_cod, $array_prod_cod, $array_prod_name, $array_prod_cant, $fecha_mm, $status_mm, $supervisor_mm, $periodo, $array_prod_stock);
-                }
+            }
+                
+            if($estado_1_vacio == true)
+            {
+                print 'Estado "EMITIDO", debe ingresar al menos 1 producto.';
+                return false;
+            }else
+            {   
+                $Class = new MuestramedicaModel();
+                print $Class->insert_muestra_medica($user_session, $med_cod, $array_prod_cod, $array_prod_name, $array_prod_cant, $fecha_mm, $status_mm, $supervisor_mm, $periodo, $array_prod_stock);
+            }
 
             /*}else
             {# FUERA DE MES
@@ -343,7 +354,15 @@ Class MuestramedicaController
         // $Class = new MuestramedicaModel();
         // print $Class->eliminar_mm($cmp, $fecha, $user_session);
         /**/
-        if($user_session == 999)##AUTORIZADOS COD REPRE ###|| $user_session == 0
+        $estado_module = __modules_permissions__('muestramedica');
+        $_split_module = explode("~", $estado_module);
+
+        $_status_ = $_split_module[0];
+        $_fecha_i_ = $_split_module[1];
+        $_fecha_f_ = $_split_module[2];
+
+
+        if($_status_ == "TRUE")##AUTORIZADOS COD REPRE ###|| $user_session == 0
         {
             $Class = new MuestramedicaModel();
             print $Class->eliminar_mm($cmp, $fecha, $user_session);

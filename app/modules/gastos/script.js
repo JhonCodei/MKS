@@ -186,6 +186,7 @@ function listado_gastos()
 }
 function editar_gasto(id)
 {
+    $("#btn_events").removeAttr("onclick").attr("onclick","update_gasto()");
     var controller = __AJAX__ + "gastos-editar_gasto", postData = new FormData();
 
     postData.append("id", id);
@@ -258,7 +259,7 @@ function update_gasto()
         buttonsStyling: true
     }).then(function()
     {
-        var controller = __AJAX__ + "gastos-_insertar_gasto", postData = new FormData();
+        var controller = __AJAX__ + "gastos-update_gasto", postData = new FormData();
         
         var id = $("#id_gasto_sql").val();
         var periodo = $("#periodo").val();

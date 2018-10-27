@@ -1,5 +1,4 @@
 //CODE
-
 $('[id^=cliente_ruc]').keypress(validateNumber);
 jQuery('#fecha-consulta').datepicker({orientation: 'auto top', toggleActive: true, autoclose: true, format: "dd/mm/yyyy", todayHighlight: true});
 var content_div = $("#_div-container_");

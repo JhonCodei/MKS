@@ -9,6 +9,7 @@ function _sql_update_gastos_detalle()
 {
 		$sql = "UPDATE gastos_detalle SET fecha = :fecha, motivo = :motivo, tipo = :tipo, documento = :documento, ruc = :ruc, importe = :importe, 
 										ventas = :ventas, ruc_cliente = :ruc_cliente, observacion = :observacion WHERE id = :id";
+		return $sql;
 }
 function _sql_listado_gastos_id()
 {

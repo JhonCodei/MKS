@@ -9,47 +9,51 @@ Class RuteoModel
         require_once 'helpers/libraries/MPDF/mpdf.php';
     }
     #__functions__
-    public function _ruteo_cerrado_($data)
-    {
-        $today = $data->datetime;
-        $fecha = $data->fecha;
-        $user_session = $data->vendedor;
-        $module = $data->module;
+    // public function _ruteo_cerrado_($data)
+    // {
+    //     $today = $data->datetime;
+    //     $fecha = $data->fecha;
+    //     $user_session = $data->vendedor;
+    //     $module = $data->module;
         
-        $output = "FALSE~NULL~NULL";
+    //     $output = "FALSE~NULL~NULL";
 
-        $sql1 = $this->db->prepare(_sql_validate_permitions());
-        $sql1->bindparam(":module", $module);
-        if($sql1->execute())
-        {
-            if($sql1->rowCount() > 0)
-            {
-                $r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC);
-                #$modulo = $r_sql1['modulo'];
-                $usuarios = $r_sql1['usuarios'];
-                $inicio = $r_sql1['inicio'];
-                $fin = $r_sql1['fin'];
+    //     $sql1 = $this->db->prepare(_sql_validate_permitions());
+    //     $sql1->bindparam(":module", $module);
+    //     if($sql1->execute())
+    //     {
+    //         if($sql1->rowCount() > 0)
+    //         {
+    //             $r_sql1 = $sql1->fetch(PDO::FETCH_ASSOC);
+    //             #$modulo = $r_sql1['modulo'];
+    //             $estado = $r_sql1['estado'];
+    //             $usuarios = $r_sql1['usuarios'];
+    //             $inicio = $r_sql1['inicio'];
+    //             $fin = $r_sql1['fin'];
                 
-                if($usuarios == 'all')
-                {
-                    if(check_in_range_date($inicio, $fin, $fecha))
-                    {
-                        $output = "TRUE~".$inicio."~".$fin;
-                    }
-                    #else{ $output = "FALSE~".$inicio."~".$fin;}
-                }else
-                {
-                    $_split_usuarios = explode(",", $usuarios);
-
-                    if(in_array($user_session, $_split_usuarios) && check_in_range_date($inicio, $fin, $fecha))
-                    {
-                        $output = "TRUE~".$inicio."~".$fin;
-                    }
-                }
-            }
-        }
-        return $output;
-    }
+    //             if($estado == 1)
+    //             {
+    //                 if($usuarios == 'all')
+    //                 {
+    //                     if(check_in_range_date($inicio, $fin, $today))
+    //                     {
+    //                         $output = "TRUE~".$inicio."~".$fin;
+    //                     }
+    //                 }else
+    //                 {
+    //                     $_split_usuarios = explode(",", $usuarios);
+    
+    //                     if(in_array($user_session, $_split_usuarios) && check_in_range_date($inicio, $fin, $today))
+    //                     {
+    //                         $output = "TRUE~".$inicio."~".$fin;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     #else{$output = "FALSE~".errorPDO($sql1).'~'.errorPDO($sql1);}
+    //     return $output;
+    // }
     public function _check_ruteo_($user_session, $fecha)
     {
         $output = FALSE;

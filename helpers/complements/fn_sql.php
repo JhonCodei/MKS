@@ -2186,3 +2186,53 @@ function _zona_to_vendedor($var, $periodo)
 
     return $output;
 }
+
+function __modules_permissions__($module)
+{
+    $user_session = info_usuario('codigo');
+    $today = date('y-m-d');
+
+    $output = "FALSE~NULL~NULL";
+
+    $query = Database::Connection()->prepare("SELECT 
+                                                    modulo, usuarios, inicio, fin, estado
+                                                FROM
+                                                    permisos
+                                                WHERE
+                                                    modulo = :module ORDER BY registro DESC LIMIT 0,1");
+    $query->bindParam(":module", $module);    
+    
+    if($query->execute())
+    {
+        if($query->rowCount() > 0)
+        {
+            $r_sql1 = $query->fetch(PDO::FETCH_ASSOC);
+            #$modulo = $r_sql1['modulo'];
+            $estado = $r_sql1['estado'];
+            $usuarios = $r_sql1['usuarios'];
+            $inicio = $r_sql1['inicio'];
+            $fin = $r_sql1['fin'];
+            
+            if($estado == 1)
+            {
+                if($usuarios == 'all')
+                {
+                    if(check_in_range_date($inicio, $fin, $today))
+                    {
+                        $output = "TRUE~".$inicio."~".$fin;
+                    }
+                }else
+                {
+                    $_split_usuarios = explode(",", $usuarios);
+
+                    if(in_array($user_session, $_split_usuarios) && check_in_range_date($inicio, $fin, $today))
+                    {
+                        $output = "TRUE~".$inicio."~".$fin;
+                    }
+                }
+            }
+        }
+    }
+
+    return $output;
+}

@@ -9,5 +9,5 @@
         "**/.svn": false,
         "**/CVS": false
     },
-    "editor.fontSize": 15
+    "editor.fontSize": 15.5
 }

@@ -284,11 +284,11 @@ function _sql_listado_ruteo_pagos()
 function _sql_validate_permitions()
 {
     $sql = "SELECT 
-                modulo, usuarios, inicio, fin
+                modulo, usuarios, inicio, fin, estado
             FROM
                 permisos
             WHERE
-                modulo = :module";
+                modulo = :module ORDER BY registro DESC LIMIT 0,1";
     
     return $sql;
 }
