@@ -1,6 +1,6 @@
 <?php
 
-Class Model
+Class HomeModel
 {
     public function __construct()
     {

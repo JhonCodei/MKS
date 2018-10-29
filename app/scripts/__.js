@@ -116,6 +116,24 @@ function periodo_now()
     var periodo = yyyy.toString() + mm.toString();
     return periodo;
 }
+function __day_now__()
+{
+    var fechahora = new Date();
+
+    var dd = fechahora.getDate();
+    var mm = fechahora.getMonth() + 1;
+    var yyyy = fechahora.getFullYear();
+
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    var fecha = dd.toString() + '/' + mm.toString() + '/' + yyyy.toString();
+    return fecha;
+}
 
 function advertencia_JS_2(msj, periodo) {
     advertencia_JS_padron(msj);

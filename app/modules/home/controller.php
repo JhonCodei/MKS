@@ -1,18 +1,18 @@
 <?php
 
-Class Controller
+Class HomeController
 {
     public function __construct()
     {
         is_session_true(); 
         
-        $__file__ = "DDDDDDDDDDDD";
+        $__file__ = "home";
 
         __MODELS__($__file__);
         __SQL__($__file__);
         __FUNCTIONS__($__file__);
 
-        $this->model = new Model();
+        $this->model = new HomeModel();
     }
     public function render($vista)
     {

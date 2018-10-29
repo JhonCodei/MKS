@@ -181,7 +181,6 @@ function __css_js__($element)
     
     return $e[$element];
 }
-
 function only_views($view = 'default')//retorno ruta vistas
 {
     /*if($view == null)
@@ -388,7 +387,13 @@ function leftmenu()
     $out .= '<div class="left side-menu">
                 <div class="sidebar-inner slimscrollleft">
                 <div id="sidebar-menu">
-                <ul>';
+                <ul>
+                <li class="has_sub">
+                    <a href="Home" class="waves-effect">
+                        <i class="fa fa-home"></i>
+                        <span>Principal</span> 
+                    </a>
+                </li>';
     
     if(strpos($menu, '||') == TRUE)
     {
